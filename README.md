@@ -19,3 +19,11 @@ This repository is based on Ionic Framework, that is angular/typescript/javascri
 If you find it useful and want to collaborate in any way (translations, improvements, developing for other platforms...) please contact.
 Any help is truly appreciated!
 Thank you very much.
+
+------------
+
+A sample QR geomap:
+![](https://project.qrgeomap.com/images/quejigales-torrecilla-1.png)
+
+This map loaded in the app:
+![](https://project.qrgeomap.com/images/quejigales-torrecilla-mobile.png)
