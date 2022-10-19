@@ -1,0 +1,28 @@
+
+npm install qrious --save
+npm install qrcode-reader --save
+npm install leaflet --save
+
+Add @import "~leaflet/dist/leaflet.css" at the end in global.scss 
+
+ng add @angular/pwa
+
+    if errors...:
+    Update nodejs from https://nodejs.org/
+    npm uninstall -g angular-cli
+    npm cache verify
+    npm install -g @angular/cli@latest
+    Remove "node_modules" folder
+    npm install --force
+
+
+
+---
+
+(icons)
+
+npm install -g ngx-pwa-icons
+
+    Create an icon.png file in the root folder of your Angular project.
+    Then run: ngx-pwa-icons
+    For good results, your icon.png file should be: square, transparant background, at least 512*512px.
