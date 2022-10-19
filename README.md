@@ -22,8 +22,11 @@ Thank you very much.
 
 ------------
 
+
 A sample QR geomap:
+
 ![](https://project.qrgeomap.com/images/quejigales-torrecilla-1.png)
 
 This map loaded in the app:
+
 ![](https://project.qrgeomap.com/images/quejigales-torrecilla-mobile.png)
