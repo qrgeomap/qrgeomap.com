@@ -11,6 +11,17 @@ Key features:
 This is a very simplified introduction to the project. For more information please visit:
 [https://project.qrgeomap.com/](https://project.qrgeomap.com/)
 
+A sample QR geomap:
+
+![](https://project.qrgeomap.com/images/quejigales-torrecilla-1.png)
+
+This map loaded in the app:
+
+![](https://project.qrgeomap.com/images/quejigales-torrecilla-mobile.png)
+
+See it in the app:
+[https://www.qrgeomap.com/?i=https://project.qrgeomap.com/images/quejigales-torrecilla-1.png](https://www.qrgeomap.com/?i=https://project.qrgeomap.com/images/quejigales-torrecilla-1.png)
+
 # About this Repository (www.qrgeomap.com)
 This repository contains the source code of the app published in [https://www.qrgeomap.com/](https://www.qrgeomap.com/), that is the web app that allows to open a QR geomap file and geolocate the map next to the user live position.
 
@@ -20,13 +31,5 @@ If you find it useful and want to collaborate in any way (translations, improvem
 Any help is truly appreciated!
 Thank you very much.
 
-------------
 
 
-A sample QR geomap:
-
-![](https://project.qrgeomap.com/images/quejigales-torrecilla-1.png)
-
-This map loaded in the app:
-
-![](https://project.qrgeomap.com/images/quejigales-torrecilla-mobile.png)
