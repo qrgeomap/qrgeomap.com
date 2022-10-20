@@ -8,7 +8,7 @@ Key features:
 - **The geolocated map consists of a single image** (a png/jpeg file), which makes it **extremely easy to share** (by email, whatsapp, ...), publish on websites, blogs, social networks...
 - **No need to install** any app. Web browser can be used, **even offline**.
 
-This is a very simplified introduction to the project. For more information please visit:
+This is a very simplified project overview. For more information please visit:
 [https://project.qrgeomap.com/](https://project.qrgeomap.com/)
 
 A sample QR geomap:
