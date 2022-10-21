@@ -68,7 +68,7 @@ export class QRgeomap {
             return;
         }
         var qrWidth = calculatedBlackWidth + calculatedWhiteWidth*2;
-        //console.log("qrWidth",qrWidth); 
+        console.log("qrWidth",qrWidth); 
         var hh = qrWidth * 32/128;
 
         // Extract QR and convert to full black/white
@@ -85,7 +85,7 @@ export class QRgeomap {
             if ( gr<128 ) gr=0; else gr=255;
             pix[i  ]=pix[i+1]=pix[i+2]=gr;
             }
-        ctx1.putImageData(imgData, 0, 0); // now qrcanvas is a 256x256 normal (black & white) QR
+        ctx1.putImageData(imgData, 0, 0); // now qrcanvas is a normal (black & white) QR
 
         // Decodify the QR
         try {
@@ -144,7 +144,7 @@ export class QRgeomap {
   public static async printQRgeomapOnImage ( mapCanvas, mapWidth, mapHeight, topLeftLat,topLeftLon, bottomRightLat,bottomRightLon, baseURL="https://www.qrgeomap.com/" ) {
       // Generates and prints a "QR geomap" for a map image.
       // - 'mapCanvas' is the image (canvas) that contains the map.
-      // - 'mapWidth','mapHeight' are the map image dimensions (pixels). NOTE: mapWidth must be equal to canvas.width, but canvas.height can be greater than mapHeight (legend or whatever can be added below the image map) 
+      // - 'mapWidth','mapHeight' are the map image dimensions (pixels). NOTE: mapWidth must be equal to canvas.width, but canvas.height can be greater than mapHeight (legend or whatever can be added below the original map image) 
       // - 'topLeftLat','topLeftLon' are the coordinates (geolocation) of the top-left pixel (at 0,0)
       // - 'bottomRightLat','bottomRightLon' are the coordinates (geolocation) of the bottom-right pixel (at mapWidth-1,mapHeight-1)
       // - 'baseURL' (optional) is the base URL to encode before "qrgeomap=...". e.g: http://www.yourdomain.com/whatever/...?param1=value1&... (It defaults to: "https://www.qrgeomap.com/")
@@ -256,7 +256,6 @@ export class QRgeomap {
       var url=baseURL;
       if ( url.includes("?") ) url+="&"; else url+="?";
       url+=`qrgeomap=${imageWidth}_${imageHeight}_${topLeftLat}_${topLeftLon}_${bottomRightLat}_${bottomRightLon}`;
-      //console.log("generateURLforQRgeomap",url);
       return url;
   }
 
