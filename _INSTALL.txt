@@ -1,6 +1,6 @@
 
 npm install qrious --save
-npm install qrcode-reader --save
+npm install jsqr --save    
 npm install leaflet --save
 
 Add @import "~leaflet/dist/leaflet.css" at the end in global.scss 

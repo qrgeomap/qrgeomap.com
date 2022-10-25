@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import QRious from 'qrious';
-import QrCode from 'qrcode-reader';
+import jsQR, { QRCode } from 'jsqr';
 
 
 
@@ -72,7 +72,7 @@ export class QRgeomap {
         var hh = qrWidth * 32/128;
 
         // Extract QR and convert to full black/white
-        var qrWidth2=500; // With 512x512 or greater fails, with 100 or less fails...
+        var qrWidth2=500; 
         var qrcanvas = document.createElement("canvas");
         qrcanvas.width = qrWidth2;
         qrcanvas.height = qrWidth2;
@@ -90,10 +90,10 @@ export class QRgeomap {
         // Decodify the QR
         try {
 
-            let data = await QRgeomap.decodeQR(qrcanvas);
+            let data = QRgeomap.decodeQR(qrcanvas);
             var url:any = data;
-            console.log(url);
-            if ( url.includes("qrgeomap=") ) {
+            console.log("url",url);
+            if ( url && url.includes("qrgeomap=") ) {
     
                 // Remove QR from original canvas
                 var ctx=canvas.getContext("2d");
@@ -228,24 +228,20 @@ export class QRgeomap {
 
 
   /*private*/ static decodeQR ( canvas ) {
-    // Assuming that canvas contains a QR code, tries to decode it and return the contained text.
-    // Returns a promise that resolves to a text, or rejects to an error if it was not possible to decode.
-    // *** dependencies: QrCode
+        // Assuming that canvas contains a QR code, tries to decode it and return the contained text.
+        // (returns false if unable to decode QR)
 
-    return new Promise( (resolve, reject) => {
-    
-        var qr = new QrCode();
-        qr.callback = (err, data) => {
-            if (data) {
-                resolve(data.result);
-            } else {
-                reject(err);
-            }
-        };
-        var image=canvas.toDataURL();
-        qr.decode(image);
-      
-    });      
+        var ctx=canvas.getContext("2d");
+        var w=canvas.width;
+        var h=canvas.height;
+        var imgData = ctx.getImageData(0,0,w,h);
+        const code:QRCode = jsQR(imgData.data, w, h, { inversionAttempts: "dontInvert" });
+        if (code) {
+            //console.log(code);
+            return code.data;
+        } else {
+            return false;
+        }
 
   }
 

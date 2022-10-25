@@ -64,8 +64,8 @@ export class HomePage {
 
       // Check if scanned the QR code with the camera...
       if ( url.includes("qrgeomap=") ) {
-          var msg="It looks like you scanned the QR code of a map image to get here. <br><br>To use a QR geomap image you need to (first) download the map image that contains the QR code on its top-right corner and (second) press the 'Map' button in this app to select and load the map image.";
-          if ( this.lang=="es" ) msg="Parece que escaneaste el código QR de una imagen de mapa para llegar aquí. <br><br>Para usar uno de estos mapas tienes que (primero) descargar la imagen de mapa que contiene el código QR en la esquina superior derecha y (segundo) presionar el botón 'Mapa' en esta aplicación para seleccionar y cargar la imagen del mapa.";
+          var msg="It looks like you scanned the QR code of a map image to get here. <br><br>To use a QR geomap image you need to (first) download the map image and (second) press the 'Map' button in this app to load the map image.";
+          if ( this.lang=="es" ) msg="Parece que escaneaste el código QR de una imagen de mapa para llegar aquí. <br><br>Para usar uno de estos mapas tienes que (primero) descargar la imagen del mapa y (segundo) presionar el botón 'Mapa' en esta aplicación para cargar la imagen del mapa.";
           this.showAlert("HEY!",msg);
       }
 
@@ -79,7 +79,7 @@ export class HomePage {
       this.map = Leaflet.map('mapId').setView([28.644800, 77.216721], 2);
       
       // Background: openstreetmap online layer
-      var options={ attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors', opacity:0.33 };
+      var options={ attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors', opacity:0.5 };
       Leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',options).addTo(this.map);
 
       // Polyline layer: user's location track

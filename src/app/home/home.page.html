@@ -86,8 +86,7 @@
                 <div>
                     <img src="assets/sample.png"/>
                 </div>
-                <p>This way, an application could simply load the image file, extract the coordinates of the contained QR code, and then geolocate the image and mark the user's live location on it.</p>
-                <p>This app (<b>QRgeomap.com</b>) does just that: it allows to load a "QR geomap" image file and shows it on screen next to the user's live location, thus facilitating a basic "navigation on the map".</p>
+                <p>This app (<b>QRgeomap.com</b>) allows to load a "QR geomap" image file, geolocates the map and shows it on screen next to the user's live location, thus facilitating a "basic navigation" with the map.</p>
                 <p>It uses modern web technologies that <b>can work even offline</b>. Add this website (qrgeomap.com) to your home screen or favorite websites of your browser so you can use it at any time to open QR geomap image files from your device.</p>
                 <p>There are two ways to load a map image with this app:</p>
                 <ol>
@@ -99,17 +98,16 @@
             </div>
 
             <div *ngIf="lang=='es'">
-              <p><b>QR geomap</b> es un proyecto que tiene como objetivo proporcionar la forma más fácil de usar y compartir mapas básicos para actividades "más allá de las carreteras".</p>
+              <p><b>QR geomap</b> es un proyecto que tiene como objetivo proporcionar la forma más fácil de usar y compartir mapas básicos para actividades al aire libre.</p>
               <p>La idea es simplemente usar <b>un solo archivo de imagen</b>, que lógicamente contendrá el mapa de un área (posiblemente con una ruta, marcadores o cualesquiera otras anotaciones directamente pintadas en la imagen), pero esta imagen incluirá además un <b>Código QR</b> superpuesto (en la esquina superior derecha) que después de ser decodificado proporcionará las coordenadas geográficas necesarias para <b>geolocalizar el mapa</b>.</p> 
               <div >
                   <img src="assets/sample.png"/>
               </div>
-              <p>De esta manera, una aplicación podría simplemente cargar el archivo de imagen, extraer las coordenadas del código QR contenido y luego geolocalizar la imagen y marcar la ubicación en vivo del usuario en ella.</p>
-              <p>Esta aplicación (<b>QRgeomap.com</b>) hace precisamente eso: permite cargar un archivo de imagen de "QR geomap" y lo muestra en pantalla junto a la ubicación en vivo del usuario, facilitando así una "navegación básica" en el mapa.</p>
+              <p>Esta aplicación (<b>QRgeomap.com</b>) permite cargar un archivo de imagen de "QR geomap", geolocaliza el mapa y lo muestra en pantalla junto a la ubicación en vivo del usuario, facilitando así una "navegación básica" con el mapa.</p>
               <p>Esta aplicación utiliza tecnologías web modernas que permiten que pueda <b>funcionar incluso sin conexión</b>. Agrega este sitio web (qrgeomap.com) a tu pantalla de inicio o sitios favoritos de tu navegador y podrás usarlo en cualquier momento para abrir archivos de imagen de "QR geomap" desde tu dispositivo.</p>
               <p>Para cargar una imagen de mapa con esta aplicación hay dos posibilidades:</p>
               <ol>
-                  <li>Pulsar el botón de mapa ( <ion-icon name="map"></ion-icon> ) para buscar una imagen de mapa guardada en su dispositivo.</li>
+                  <li>Pulsar el botón de mapa ( <ion-icon name="map"></ion-icon> ) para buscar una imagen de mapa guardada en el dispositivo.</li>
                   <li>Si la imagen está alojada en internet se puede llamar a qrgeomap.com pasando por parámetro (?i=) la dirección (URL) de la imagen.<br><span class="smaller-text">Ej: Para cargar el mapa de ejemplo que está ubicado en https://www.qrgeomap.com/assets/sample.png, se puede usar este enlace: <a href="https://www.qrgeomap.com/?i=https://www.qrgeomap.com/assets/sample.png">https://www.qrgeomap.com/?i=https://www.qrgeomap.com/assets/sample.png</a></span></li>
               </ol>
               <hr>
