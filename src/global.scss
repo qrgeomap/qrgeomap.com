@@ -28,7 +28,73 @@
 @import "~leaflet/dist/leaflet.css";
 
 
+
+
+
+
+// --------------- custom --------------
+
+
+
 /* Used in alerts, to allow text selection ! */
-.TextSelectable{
+.my-custom-alert-class {
     user-select: text!important;
 }
+
+
+// -- Para simular un ion-item que en realidad es un input type=file transparente... (para elegir un archivo)
+
+.fake_file_input_ion_item-btn_container-div {
+    display: table; margin: 0 auto;   // center
+    position: relative;
+    margin:0px;
+    padding:0px;
+    width: 100%; 
+    height: 34px; 
+    overflow: hidden;
+}
+
+.fake_file_input_ion_item-btn_hide-input {
+    position: absolute; 
+    bottom: -100000000px;
+
+}
+
+.fake_file_input_ion_item-btn_transparent-input {
+    position: absolute; 
+    font-size: 36px; 
+    width: 100%; 
+    opacity: 0; 
+    filter:alpha(opacity=0); 
+}
+
+
+
+.fake_file_input_ion_item-btn_behind {
+    cursor:pointer;    
+    position: absolute; 
+    vertical-align: middle;
+    width: 100%; 
+    height: 100%; 
+    padding-top: 2px;
+}
+
+
+
+
+  
+  .item-icon-ionicon {
+    display:inline-block;
+    vertical-align: middle;
+    text-align: center;
+    margin-right: 16px;
+    margin-left: 0px;
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+  }
+  
+  
+  
+  
+  

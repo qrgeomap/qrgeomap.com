@@ -1,0 +1,28 @@
+{
+	"HEADER_TEXT":"La forma más fácil de usar y compartir mapas básicos para actividades al aire libre",
+	"ABOUT":"Acerca de",
+	"LOAD_MAP":"Abrir Mapa",
+	"CREATE_MAP":"Crear Mapa",
+
+	"SOURCE":"Origen",
+	"LOAD_TRACK":"Abrir Track (archivo GPX)",
+	"POINTS":"Puntos",
+	"WAYPOINTS":"Waypoints",
+	"TOTAL_DISTANCE":"Distancia total",
+	"CUMULATIVE_ELEVATION_GAIN":"Desnivel Acumulado",
+	"INCLUDE_WAYPOINTS":"Incluir los Waypoints",
+	"INCLUDE_START_AND_FINISH":"Incluir INICIO y FIN",
+	"START":"INICIO",
+	"FINISH":"FIN",
+	"COLOR":"Color",
+	"LINE_WIDTH":"Grosor de línea", 
+	"MAP_PROVIDER":"Proveedor del Mapa",
+	"QR_SOURCE_LINK":"Enlace de origen para el código QR",
+	"MAP_TITLE":"Título del mapa",
+	"DOWNLOAD":"Descargar",
+
+	"NO":"No",
+	"YES":"Sí",
+	"CANCEL":"Cancelar",
+	"OK":"Aceptar"
+}

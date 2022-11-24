@@ -1,6 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { AlertController, IonModal } from '@ionic/angular';
 import * as Leaflet from 'leaflet';
+import { Control } from '../services/control';
 import { QRgeomap } from '../services/qrgeomap';
 
 
@@ -13,11 +14,11 @@ export class HomePage {
 
   @ViewChild(IonModal) modal: IonModal;
 
-  lang:string="en";                           // user's language
 
   map: Leaflet.Map;                           // The map
   imageOverlay: Leaflet.ImageOverlay;         // overlay for the image map
-  marker: Leaflet.marker;                     // current location marker  
+  redMarker: Leaflet.marker;                  // red marker: current user location  
+  greyMarker: Leaflet.marker;                 // grey marker: where the user taps  
   polyline=null;                              // array of points for the "track" (user locations...)
 
 
@@ -27,19 +28,15 @@ export class HomePage {
 
   watchPositionID=null;                       // ID of the location watcher
 
+  initialized=false;
 
-  constructor ( private alertController:AlertController ) {
+  constructor ( public control:Control, private alertController:AlertController ) {
 
-      // set user's lang
-      var lang:string = navigator.language.slice(0,2);
-      if ( lang=="en"||lang=="es" ) this.setLang(lang)
+    this.control.homePage=this;
 
   }
 
 
-  setLang(lang) {
-      this.lang=lang;
-  }
 
 
   ngOnInit() { 
@@ -48,6 +45,16 @@ export class HomePage {
 
 
   ionViewDidEnter() { 
+
+      if ( this.initialized ) { 
+          setTimeout(()=>{ 
+              this.map.invalidateSize(); 
+              console.log("redraw map!");
+          },500); // force redraw!
+          return; 
+      }
+
+      // initialize !
 
       this.createLeafletMap(); 
       
@@ -65,10 +72,12 @@ export class HomePage {
       // Check if scanned the QR code with the camera...
       if ( url.includes("qrgeomap=") ) {
           var msg="It looks like you scanned the QR code of a map image to get here. <br><br>To use a QR geomap image you need to (first) download the map image and (second) press the 'Map' button in this app to load the map image.";
-          if ( this.lang=="es" ) msg="Parece que escaneaste el código QR de una imagen de mapa para llegar aquí. <br><br>Para usar uno de estos mapas tienes que (primero) descargar la imagen del mapa y (segundo) presionar el botón 'Mapa' en esta aplicación para cargar la imagen del mapa.";
-          this.showAlert("HEY!",msg);
+          if ( this.control.lang=="es" ) msg="Parece que escaneaste el código QR de una imagen de mapa para llegar aquí. <br><br>Para usar uno de estos mapas tienes que (primero) descargar la imagen del mapa y (segundo) presionar el botón 'Mapa' en esta aplicación para cargar la imagen del mapa.";
+          this.control.alert("HEY!",msg);
       }
 
+
+      this.initialized=true;
       
   }
 
@@ -88,40 +97,27 @@ export class HomePage {
 
       Leaflet.control.scale({maxWidth:150,imperial:false}).addTo(this.map);
 
+      this.map.on('click',(e)=>this.updateGreyMarker(e.latlng));
+
+
       // Initial location
       this.centerMapOnCurrentLocation();
-     
-      /*
-      // Tests
-      this.loadMapFromImageFile("assets/sample.png"); // test sample file
-      // test points
-      setTimeout(()=>{
-          var pos;
-          pos={lat:36.764118,lng:-4.710391}; this.polyline.addLatLng(pos); this.updateMarker(pos);
-          pos={lat:36.765277,lng:-4.704527}; this.polyline.addLatLng(pos); this.updateMarker(pos);
-          pos={lat:36.762940,lng:-4.703527}; this.polyline.addLatLng(pos); this.updateMarker(pos);
-      },1000);
-      */
-      
 
   }
 
 
-  onInputFileSelected (evt) {
+  onMapFileSelected (evt) {
       // user selected a file --> Load the map
 
       var tgt = evt.target || window.event.srcElement,
       files = tgt.files;
-      // FileReader support
       if ( FileReader && files && files.length ) {
           var fr = new FileReader();
           fr.onload = ()=>{
               this.loadMapFromImageFile(fr.result);
-              var inputFile:any=document.getElementById('input'); inputFile.value = "";
+              var inputFile:any=document.getElementById('input_map_fab'); inputFile.value = "";
           }
           fr.readAsDataURL(files[0]);
-      }
-      else { // Not supported
       }
 
   }
@@ -160,13 +156,13 @@ export class HomePage {
               url=url.split("qrgeomap=")[0];
               url=url.replace("?","");
               this.loaded_map_url=url;
-              if ( this.loaded_map_url=="https://www.qrgeomap.com/" ) this.loaded_map_url="";
+              if ( this.loaded_map_url=="https://www.qrgeomap.com"||this.loaded_map_url=="https://www.qrgeomap.com/" ) this.loaded_map_url="";
 
               this.loaded_map=true;
               this.source_bar_visible=true;
               this.polyline.setLatLngs([]); // Restart track
           
-          }).catch((err)=>{ this.showAlert("ERROR",err) });
+          }).catch((err)=>{ this.control.alert("ERROR",err) });
 
       }; //imageQRgeomap.onload 
       img.src = file;
@@ -217,7 +213,7 @@ export class HomePage {
                   // center map in current point
                   this.map.setView([lat,lng]);
                   // draw marker
-                  this.updateMarker({lat:lat,lng:lng});
+                  this.updateRedMarker({lat:lat,lng:lng});
 
               }, (err)=>{}, options );
       }//else
@@ -225,48 +221,37 @@ export class HomePage {
   }
 
 
-  updateMarker ( latlng ) {
-      // create/update marker in the current location (latlng)
+  updateRedMarker ( latlng ) {
+      // create/update red marker in the current location (latlng)
 
-      if ( this.marker==null ) {
+      if ( this.redMarker==null ) {
             var myIcon = Leaflet.icon({iconUrl:'assets/red-marker.png',iconSize:[28,42],iconAnchor:[14,42]});
-            this.marker = Leaflet.marker(latlng,{icon:myIcon}).addTo(this.map).on('click',()=>{this.onClickMarker();});
-            this.marker.setOpacity(0.85);
+            this.redMarker = Leaflet.marker(latlng,{icon:myIcon}).addTo(this.map).on('click',()=>{this.onClickMarker(this.redMarker);});
+            this.redMarker.setOpacity(0.9);
       } 
-      this.marker.setLatLng(latlng);
-
+      this.redMarker.setLatLng(latlng);
   }
 
 
-  onClickMarker() {
+  updateGreyMarker ( latlng ) {
+      // Fires when the user taps on the map --> place the grey marker
+      if ( this.greyMarker==null ) {
+            var myIcon = Leaflet.icon({iconUrl:'assets/grey-marker.png',iconSize:[28,42],iconAnchor:[14,42]});
+            this.greyMarker = Leaflet.marker(latlng,{icon:myIcon}).addTo(this.map).on('click',()=>{this.onClickMarker(this.greyMarker);});
+            this.greyMarker.setOpacity(0.75);
+      } 
+      this.greyMarker.setLatLng(latlng);
+  }
+
+
+  onClickMarker(marker) {
       // when marker is clicked --> show alert with its coordinates
-      var pos=this.marker.getLatLng();
-      this.showAlert("Lat,Lon",""+pos.lat+","+pos.lng);
+      var pos=marker.getLatLng();
+      var lat=Math.round(pos.lat*10000000)/10000000;
+      var lng=Math.round(pos.lng*10000000)/10000000;
+      this.control.alert("Lat,Lon",""+lat+","+lng);
   }
 
-
-
-
-
-  // ------------------- some helpers... -----------------------
-
-
-  closeModal() {
-      // Closes the modal dialog 
-      this.modal.dismiss(null, 'cancel');
-  }
-
-
-  async showAlert ( title, content ) {
-      // Shows an Alert dialog with title and content
-      const alert = await this.alertController.create({
-          header: title,
-          message: content,
-          buttons: ['OK'],
-          cssClass:'TextSelectable'
-      });
-      await alert.present();
-  }
 
 
 

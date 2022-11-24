@@ -1,3 +1,46 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+  
+  <ion-menu side="end" menuId="menuId" contentId="main" swipe-gesture="false">
+
+    <ion-content>
+  
+
+      <div id="menu_header">
+          <img src="assets/qrgeomap-header-128x32.png" style="height:32px;" />
+          <div style="margin-top:20px;">{{'HEADER_TEXT'|translate}}</div>
+      </div>
+      
+      <ion-list lines="full">
+
+
+        <ion-item button (click)="control.navigate('about',{})">
+            <ion-icon class="item-icon-ionicon" name='information-circle-outline'></ion-icon><span text-wrap class="small-letter"> {{'ABOUT'|translate}}</span>
+        </ion-item>
+    
+        <ion-item>
+            <div class='fake_file_input_ion_item-btn_container-div'> 
+                <label for="input_map_menu" class="fake_file_input_ion_item-btn_behind">
+                    <ion-icon class="item-icon-ionicon" name='map-outline'></ion-icon> <span text-wrap>{{'LOAD_MAP'|translate}}</span>
+                </label>
+                <input id="input_map_menu" style="cursor:pointer;" type="file" accept="image/*" class="fake_file_input_ion_item-btn_hide-input" (change)="onMapFileSelected($event)" />
+            </div>                    
+        </ion-item>
+    
+        <ion-item button (click)="control.navigate('create-map',{})">
+          <ion-icon class="item-icon-ionicon" name='create-outline'></ion-icon><span text-wrap class="small-letter"> {{'CREATE_MAP'|translate}}</span>
+       </ion-item>
+
+
+      </ion-list>
+
+
+    </ion-content>
+  
+  
+  </ion-menu>
+
+  
+  <ion-router-outlet id="main"></ion-router-outlet>
+
+
 </ion-app>

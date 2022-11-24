@@ -1,0 +1,28 @@
+{
+	"HEADER_TEXT":"The easiest way to use and share basic maps for outdoor activities",
+	"ABOUT":"About",
+	"LOAD_MAP":"Load Map",
+	"CREATE_MAP":"Create Map",
+
+	"SOURCE":"Source",
+	"LOAD_TRACK":"Load Track (GPX file)",
+	"POINTS":"Points",
+	"WAYPOINTS":"Waypoints",
+	"TOTAL_DISTANCE":"Total Distance",
+	"CUMULATIVE_ELEVATION_GAIN":"Cumulative Elevation Gain",
+	"INCLUDE_WAYPOINTS":"Include Waypoints",
+	"INCLUDE_START_AND_FINISH":"Include START and FINISH",
+	"START":"START",
+	"FINISH":"FINISH",
+	"COLOR":"Color",
+	"LINE_WIDTH":"Line width",
+	"MAP_PROVIDER":"Map provider",
+	"QR_SOURCE_LINK":"Source link for the QR code",
+	"MAP_TITLE":"Map title",
+	"DOWNLOAD":"Download",
+
+	"NO":"No",
+	"YES":"Yes",
+	"CANCEL":"Cancel",
+	"OK":"Ok"
+}

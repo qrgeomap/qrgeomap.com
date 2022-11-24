@@ -71,27 +71,31 @@ export class QRgeomap {
         console.log("qrWidth",qrWidth); 
         var hh = qrWidth * 32/128;
 
-        // Extract QR and convert to full black/white
+        // Extract QR 
         var qrWidth2=500; 
         var qrcanvas = document.createElement("canvas");
         qrcanvas.width = qrWidth2;
         qrcanvas.height = qrWidth2;
         var ctx1=qrcanvas.getContext("2d");
         ctx1.drawImage(canvas,w-qrWidth,hh,qrWidth,qrWidth, 0,0,qrWidth2,qrWidth2);  
-        imgData = ctx1.getImageData(0,0,qrWidth2,qrWidth2);
-        pix = imgData.data;
-        for ( var i=0,n=pix.length; i<n; i+=4 ) {
-            var gr=(pix[i+0]+pix[i+1]+pix[i+2])/3;
-            if ( gr<128 ) gr=0; else gr=255;
-            pix[i  ]=pix[i+1]=pix[i+2]=gr;
-            }
-        ctx1.putImageData(imgData, 0, 0); // now qrcanvas is a normal (black & white) QR
 
         // Decodify the QR
         try {
-
-            let data = QRgeomap.decodeQR(qrcanvas);
-            var url:any = data;
+            console.log("try to decode QR as is")
+            var url:any = QRgeomap.decodeQR(qrcanvas);
+            if ( !url ) { // sometimes it's unable to decode the semitransparent QR --> make it black/white
+                imgData = ctx1.getImageData(0,0,qrWidth2,qrWidth2);
+                pix = imgData.data;
+                for ( var i=0,n=pix.length; i<n; i+=4 ) {
+                    var gr=(pix[i+0]+pix[i+1]+pix[i+2])/3;
+                    if ( gr<128 ) gr=0; else gr=255;
+                    pix[i  ]=pix[i+1]=pix[i+2]=gr;
+                    }
+                ctx1.putImageData(imgData, 0, 0); // now qrcanvas is a normal (black & white) QR
+                // Try again
+                console.log("try to decode QR converted to B&W");
+                url = QRgeomap.decodeQR(qrcanvas);
+            }
             console.log("url",url);
             if ( url && url.includes("qrgeomap=") ) {
     
@@ -161,24 +165,17 @@ export class QRgeomap {
               var w=mapCanvas.width;
               var h=Math.floor(1.0*w/mAspect);
             
-              // Calculate width for QR code (depends on the size of largest side of the image)
-              //    "width" < 1500px --> QR width = 128px
-              //    "width" < 2500px --> QR width = 256px
-              //    "width" < 3500px --> QR width = 384px
-              //    "width" < 4000px --> QR width = 512px
-              //    ...
-        
               var maxWH = Math.max(w,h);
-              var scaleFactor = 1;
-              if ( maxWH > 1000 ) scaleFactor = 1 + Math.round((maxWH-1000)/1000);
-              var qrWidth = 128*scaleFactor;   // qr (and header) width
-              var hh = 32*scaleFactor;         // header height
+              var scaleFactor = 1+maxWH/1280;
+              var qrWidth = Math.floor(128*scaleFactor);   // qr (and header) width
+              var hh = Math.floor(32*scaleFactor);         // header height
 
               // create new canvas with "QRgeomap" header and the QR
               var hqCanvas = document.createElement("canvas"); 
               hqCanvas.width = qrWidth;
               hqCanvas.height = hh+qrWidth;
               var hqContext = hqCanvas.getContext("2d");
+              hqContext.imageSmoothingEnabled = false;
               hqContext.drawImage(imageQRgeomap,0,0,128,32,0,0,qrWidth,hh);
               var url = QRgeomap.generateURLforQRgeomap(w,h,topLeftLat,topLeftLon,bottomRightLat,bottomRightLon,baseURL);
               console.log(url);

@@ -2,15 +2,19 @@
 
     <!-- The toolbar: title + open map + about  -->
 
-    <ion-toolbar color="dark">
+    <ion-toolbar color="primary">
 
       <ion-title>
           <img src="assets/qrgeomap_com_title.png" class="title_img" />
       </ion-title>
 
+
+
       <ion-buttons slot="end">
 
-          <ion-button id="open-modal" style="margin-right: 6px;"><ion-icon name="information-circle-outline" class="info_icon"></ion-icon></ion-button>
+          <ion-menu-toggle slot="end">
+                <ion-button fill="clear" style="margin-inline-start:16px;margin-inline-end:16px;"><ion-icon name="menu" style="color:white;"></ion-icon></ion-button>
+          </ion-menu-toggle>
 
       </ion-buttons>
 
@@ -21,7 +25,7 @@
     <ion-toolbar color="light" *ngIf="loaded_map && loaded_map_url!='' && source_bar_visible">
           <ion-title>
               <div id="source_bar">
-                  <div>Source: <a href="{{loaded_map_url}}" target="_blank">{{loaded_map_url}}</a></div>
+                  <div>{{'SOURCE'|translate}}: <a href="{{loaded_map_url}}" target="_blank">{{loaded_map_url}}</a></div>
               </div>
           </ion-title>
           <ion-buttons slot="end">
@@ -42,13 +46,13 @@
 
         <ion-fab vertical="top" horizontal="end" slot="fixed" style="margin-top:2px;">
 
-            <ion-fab-button color="dark" style="cursor:pointer;">
-                <label for="input" class="mapFakeInput"><ion-icon name="map"></ion-icon></label>
-                <input id="input" type="file" class="mapHideInput" (change)="onInputFileSelected($event)">
+            <ion-fab-button color="primary" style="cursor:pointer;" *ngIf="!loaded_map">
+                <label for="input_map_fab" class="input_map_fab_fake"><ion-icon name="map"></ion-icon></label>
+                <input id="input_map_fab" type="file" class="input_map_fab_hide" accept="image/*" (change)="onMapFileSelected($event)">
             </ion-fab-button>
             
             <ion-fab-button color="tertiary" style="margin-top:6px;" (click)="watchPosition()" [class]="watchPositionID?'blink':'none'">
-                <ion-icon name="locate-outline"></ion-icon>
+                <ion-icon name="locate"></ion-icon>
             </ion-fab-button>
 
         </ion-fab>
@@ -58,70 +62,6 @@
 
     </div>
   
-
-
-  <!-- About modal  -->
-
-  <ion-modal trigger="open-modal">
-      <ng-template>
-        <ion-header>
-          <ion-toolbar color="dark">
-            <ion-title *ngIf="lang=='en'">About</ion-title>
-            <ion-title *ngIf="lang=='es'">Acerca de</ion-title>
-            <ion-buttons slot="end">
-                <ion-button (click)="closeModal()" [strong]="true"><ion-icon name="checkmark-outline"></ion-icon></ion-button>
-            </ion-buttons>
-          </ion-toolbar>
-        </ion-header>
-        <ion-content class="ion-padding">
-            
-            <div style="text-align:center;">
-                <ion-button size="small" [fill]="lang=='en'?'solid':'outline'" (click)="setLang('en')">English</ion-button>
-                <ion-button size="small" [fill]="lang=='es'?'solid':'outline'" (click)="setLang('es')">Español</ion-button>
-            </div>
-
-            <div *ngIf="lang=='en'">
-                <p><b>QR geomap</b> is a project that aims to provide the easiest way to use and share basic maps for outdoor activities.</p>
-                <p>The idea is to simply use <b>a single image file</b>, which will logically contain the map of an area (possibly with a track, markers or any other annotations directly painted on the image), but this image will also include a <b>QR code</b> superimposed (on the upper right corner) which after being decoded will provide the geographical coordinates necessary to <b>geolocate the map</b>.</p>            
-                <div>
-                    <img src="assets/sample.png"/>
-                </div>
-                <p>This app (<b>QRgeomap.com</b>) allows to load a "QR geomap" image file, geolocates the map and shows it on screen next to the user's live location, thus facilitating a "basic navigation" with the map.</p>
-                <p>It uses modern web technologies that <b>can work even offline</b>. Add this website (qrgeomap.com) to your home screen or favorite websites of your browser so you can use it at any time to open QR geomap image files from your device.</p>
-                <p>There are two ways to load a map image with this app:</p>
-                <ol>
-                    <li>Click the map button ( <ion-icon name="map"></ion-icon> ) to browse for a map image saved on your device.</li>
-                    <li>If the image is hosted on the internet, qrgeomap.com can be called passing the image address (URL) as a parameter (?i=).<br><span class="smaller-text">Ex: To load the sample map which is located at https://www.qrgeomap.com/assets/sample.png, you can use this link: <a href="https://www.qrgeomap.com/?i=https://www.qrgeomap.com/assets/sample.png">https://www.qrgeomap.com/?i=https://www.qrgeomap.com/assets/sample.png</a ></span></li>
-                </ol>
-                <hr>                
-                <p>For more information about the project please visit <a href="https://project.qrgeomap.com" target="_blank">https://project.qrgeomap.com</a></p>
-            </div>
-
-            <div *ngIf="lang=='es'">
-              <p><b>QR geomap</b> es un proyecto que tiene como objetivo proporcionar la forma más fácil de usar y compartir mapas básicos para actividades al aire libre.</p>
-              <p>La idea es simplemente usar <b>un solo archivo de imagen</b>, que lógicamente contendrá el mapa de un área (posiblemente con una ruta, marcadores o cualesquiera otras anotaciones directamente pintadas en la imagen), pero esta imagen incluirá además un <b>Código QR</b> superpuesto (en la esquina superior derecha) que después de ser decodificado proporcionará las coordenadas geográficas necesarias para <b>geolocalizar el mapa</b>.</p> 
-              <div >
-                  <img src="assets/sample.png"/>
-              </div>
-              <p>Esta aplicación (<b>QRgeomap.com</b>) permite cargar un archivo de imagen de "QR geomap", geolocaliza el mapa y lo muestra en pantalla junto a la ubicación en vivo del usuario, facilitando así una "navegación básica" con el mapa.</p>
-              <p>Esta aplicación utiliza tecnologías web modernas que permiten que pueda <b>funcionar incluso sin conexión</b>. Agrega este sitio web (qrgeomap.com) a tu pantalla de inicio o sitios favoritos de tu navegador y podrás usarlo en cualquier momento para abrir archivos de imagen de "QR geomap" desde tu dispositivo.</p>
-              <p>Para cargar una imagen de mapa con esta aplicación hay dos posibilidades:</p>
-              <ol>
-                  <li>Pulsar el botón de mapa ( <ion-icon name="map"></ion-icon> ) para buscar una imagen de mapa guardada en el dispositivo.</li>
-                  <li>Si la imagen está alojada en internet se puede llamar a qrgeomap.com pasando por parámetro (?i=) la dirección (URL) de la imagen.<br><span class="smaller-text">Ej: Para cargar el mapa de ejemplo que está ubicado en https://www.qrgeomap.com/assets/sample.png, se puede usar este enlace: <a href="https://www.qrgeomap.com/?i=https://www.qrgeomap.com/assets/sample.png">https://www.qrgeomap.com/?i=https://www.qrgeomap.com/assets/sample.png</a></span></li>
-              </ol>
-              <hr>
-              <p>Para obtener más información sobre el proyecto, visita <a href="https://project.qrgeomap.com" target="_blank">https://project.qrgeomap.com</a></p>
-          </div>
-
-          <div style="text-align: center;">
-                <ion-button (click)="closeModal()"><span>Ok</span></ion-button>
-          </div>
-
-        </ion-content>
-      </ng-template>
-  </ion-modal>
-
 
 
 

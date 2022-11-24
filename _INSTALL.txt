@@ -5,6 +5,11 @@ npm install leaflet --save
 
 Add @import "~leaflet/dist/leaflet.css" at the end in global.scss 
 
+npm install @ngx-translate/core @ngx-translate/http-loader --save
+npm install gpxparser --save
+npm install file-saver --save
+
+
 ng add @angular/pwa
 
     if errors...:
@@ -14,6 +19,7 @@ ng add @angular/pwa
     npm install -g @angular/cli@latest
     Remove "node_modules" folder
     npm install --force
+
 
 
 
