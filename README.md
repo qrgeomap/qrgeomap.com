@@ -17,7 +17,7 @@ A sample QR geomap:
 
 This map loaded in the app:
 
-![](https://project.qrgeomap.com/images/quejigales-torrecilla-mobile.png)
+![](https://project.qrgeomap.com/images/quejigales-torrecilla-mobile.png?v=2)
 
 See it in the app:
 [https://www.qrgeomap.com/?i=https://project.qrgeomap.com/images/quejigales-torrecilla-1.png](https://www.qrgeomap.com/?i=https://project.qrgeomap.com/images/quejigales-torrecilla-1.png)
