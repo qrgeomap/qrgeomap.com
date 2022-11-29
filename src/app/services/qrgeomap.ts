@@ -36,39 +36,48 @@ export class QRgeomap {
         var overHeaderHeight=3;
         var imgData = ctx.getImageData(w-overwidth,0,overwidth,overHeaderHeight);
         var pix = imgData.data;
-        var calculatedWhiteWidth=0;
-        var calculatedBlackWidth=0;
-        var isBlack=false;
+        var calculatedWhiteWidth;
+        var calculatedBlackWidth;
+        var isBlack;
         var x,y,offset;
+        var qrWidth=0;
         y=1;
-        for ( x=overwidth-1; x>=0; x-- ) {
-            offset=4*(overwidth*y+x);
-            var R=pix[offset];
-            var G=pix[offset+1];
-            var B=pix[offset+2];
-            if ( !isBlack ) { // first zone (right white line)
-                if ( R>=128 && G>=128 && B>=128 ) {
-                    calculatedWhiteWidth+=1;
-                } else {
-                    isBlack=true;
+        var B2W;
+        // Black to White change is supposed to be at 128, but let's try with 124,128,132 (image could be saved with low quality...)
+        for ( B2W=118; B2W<=138; B2W+=4 ) { 
+            calculatedWhiteWidth=0;
+            calculatedBlackWidth=0;
+            isBlack=false;
+            for ( x=overwidth-1; x>=0; x-- ) {
+                offset=4*(overwidth*y+x);
+                var R=pix[offset];
+                var G=pix[offset+1];
+                var B=pix[offset+2];
+                if ( !isBlack ) { // first zone (right white line)
+                    if ( R>=B2W && G>=B2W && B>=B2W ) {
+                        calculatedWhiteWidth+=1;
+                    } else {
+                        isBlack=true;
+                    }
+                }
+                if ( isBlack ) { // middle (black zone)
+                    if ( !(R>=B2W && G>=B2W && B>=B2W) ) {
+                        calculatedBlackWidth+=1;
+                    } else { // left white line found --> finish!
+                        break;
+                    }
                 }
             }
-            if ( isBlack ) { // middle (black zone)
-                if ( !(R>=128 && G>=128 && B>=128) ) {
-                    calculatedBlackWidth+=1;
-                } else { // left white line found --> finish!
-                    break;
-                }
-            }
+            if ( calculatedBlackWidth>0 ) {
+                var qw = calculatedBlackWidth + calculatedWhiteWidth*2;
+                qrWidth = Math.max(qrWidth,qw);
+                console.log({B2W:B2W,qw:qw,qrWidth:qrWidth}); 
+            }           
         }
-        console.log("calculatedWhiteWidth",calculatedWhiteWidth);
-        console.log("calculatedBlackWidth",calculatedBlackWidth);
-        if ( calculatedBlackWidth==0 ) {
+        if ( qrWidth==0 || qrWidth>w || qrWidth>h ) {
             reject("UNABLE TO EXTRACT QR GEOMAP");    
             return;
         }
-        var qrWidth = calculatedBlackWidth + calculatedWhiteWidth*2;
-        console.log("qrWidth",qrWidth); 
         var hh = qrWidth * 32/128;
 
         // Extract QR 
@@ -104,9 +113,10 @@ export class QRgeomap {
                 var imgData = ctx.getImageData(w-qrWidth,0,qrWidth,hh+qrWidth);
                 var pix = imgData.data;
                 for ( var i=0,n=pix.length; i<n; i+=4 ) {
-                    pix[i  ] = 2 * (pix[i  ]<128 ? pix[i  ] : (pix[i  ]-128));
-                    pix[i+1] = 2 * (pix[i+1]<128 ? pix[i+1] : (pix[i+1]-128));
-                    pix[i+2] = 2 * (pix[i+2]<128 ? pix[i+2] : (pix[i+2]-128));
+                    var gr=(pix[i+0]+pix[i+1]+pix[i+2])/3;
+                    pix[i  ] = 2 * (gr<0x80 ? pix[i  ] : (pix[i  ]-0x80));
+                    pix[i+1] = 2 * (gr<0x80 ? pix[i+1] : (pix[i+1]-0x80));
+                    pix[i+2] = 2 * (gr<0x80 ? pix[i+2] : (pix[i+2]-0x80));
                     }
                 ctx.putImageData(imgData, w-qrWidth,0);
     
