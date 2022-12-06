@@ -176,7 +176,7 @@ export class QRgeomap {
               var h=Math.floor(1.0*w/mAspect);
             
               var maxWH = Math.max(w,h);
-              var scaleFactor = 1+maxWH/1280;
+              var scaleFactor = maxWH/1280;
               var qrWidth = Math.floor(128*scaleFactor);   // qr (and header) width
               var hh = Math.floor(32*scaleFactor);         // header height
 
