@@ -210,7 +210,7 @@ export class CreateMapPage implements OnInit {
         var trackAspectR = trackWidthKms/trackHeightKms;            // aspect ratio of the track points bounds
         var trackCenterLat=(minLat+maxLat)/2;                       // track center
         var trackCenterLon=(minLon+maxLon)/2;
-        var factorAmpl=1.15;                                        //  larger factor (a bit of space to the edges)
+        var factorAmpl=1.20;                                        //  larger factor (a bit of space to the edges)
 
         var w,h;
         var p1,p2;
@@ -429,7 +429,7 @@ export class CreateMapPage implements OnInit {
         var n=this.track.points.length;
         // thick line (white stroke)
         var color="rgba(255,255,255,1)";
-        var lineWidth=this.line_width*waypointSize/8;
+        var lineWidth=this.line_width*waypointSize/10;
         var xa,ya;
         for ( var i=0; i<n; i++ ) {
             p = this.track.points[i];
@@ -441,7 +441,7 @@ export class CreateMapPage implements OnInit {
         }
         // "slim" line (selected color)
         color = this.color; 
-        lineWidth = this.line_width*waypointSize/16;
+        lineWidth = this.line_width*waypointSize/20;
         for ( var i=0; i<n; i++ ) {
             p = this.track.points[i];
             x=scale*this.mData.mapWidthPx*(p.lon-this.mData.p1[0])/(this.mData.p2[0]-this.mData.p1[0]);
