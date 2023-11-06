@@ -10,8 +10,6 @@
 	"WAYPOINTS":"Waypoints",
 	"TOTAL_DISTANCE":"Distancia total",
 	"CUMULATIVE_ELEVATION_GAIN":"Desnivel Acumulado",
-	"INCLUDE_WAYPOINTS":"Incluir los Waypoints",
-	"INCLUDE_START_AND_FINISH":"Incluir INICIO y FIN",
 	"START":"INICIO",
 	"FINISH":"FIN",
 	"COLOR":"Color",

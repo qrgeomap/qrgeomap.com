@@ -56,15 +56,13 @@
                 </div>
             </ion-item>
 
-            <ion-item *ngIf="track.waypoints.length>0">
-                <ion-label>{{'INCLUDE_WAYPOINTS'|translate}}</ion-label>
-                <ion-toggle slot="end" [(ngModel)]="include_waypoints"></ion-toggle>
-            </ion-item>  
-
-            <ion-item>
-                <ion-label>{{'INCLUDE_START_AND_FINISH'|translate}}</ion-label>
-                <ion-toggle slot="end" [(ngModel)]="include_start_and_finish"></ion-toggle>
-            </ion-item>  
+            <div class="points_container">
+                <div class="points_subtitle">{{'POINTS'|translate}}</div>
+                <ion-item *ngFor="let point of points">
+                    <ion-input [(ngModel)]="point.name" [disabled]="!point.visible"></ion-input>
+                    <ion-toggle slot="end" [(ngModel)]="point.visible"></ion-toggle>
+                </ion-item>  
+            </div>
 
             <ion-item>
                 <ion-label position="stacked">{{'QR_SOURCE_LINK'|translate}}</ion-label>

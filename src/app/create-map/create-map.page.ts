@@ -22,9 +22,10 @@ export class CreateMapPage implements OnInit {
   source_link="";
   color="#000000";
   line_width=2;
-  include_waypoints=true;
-  include_start_and_finish=true;
+  //include_waypoints=true;
+  //include_start_and_finish=true;
   map_title="";
+
 
 
   // aux vars
@@ -36,6 +37,8 @@ export class CreateMapPage implements OnInit {
   imageSrc="";                  // the image that will be shown on screen ( canvas.toDataURL() )
   mData;                        // aux object with data needed to create the map: bounds, ...
   mapReady=false;               // true when the map is ready to be downloaded
+
+  points=[];                    // array with points to be painted (start,waypoints,finish)
 
 
 
@@ -82,7 +85,22 @@ export class CreateMapPage implements OnInit {
                     this.track_loaded=true;
                     this.track=track;                           // parsed track object
                     this.track.filename=data.name;              // filename
-                    this.include_waypoints = ( this.track.waypoints.length>0 );     
+                    // Points: start, wayponts, finish
+                    this.points=[];
+                    var n=this.track.points.length;
+                    var p;
+                    if ( n>0 ) {
+                        p = this.track.points[0];
+                        this.points.push({lat:p.lat,lon:p.lon,name:this.control.getString("START"),visible:true});
+                    }
+                    for ( var i=0; i<this.track.waypoints.length; i++ ) {
+                        p=this.track.waypoints[i];
+                        this.points.push({lat:p.lat,lon:p.lon,name:p.name,visible:true});
+                    } 
+                    if ( n>0 ) {
+                        p = this.track.points[n-1];
+                        this.points.push({lat:p.lat,lon:p.lon,name:this.control.getString("FINISH"),visible:true});
+                    }
                     // Suggested title: filename (distance, elevation gain)
                     this.map_title = this.control.removeExtension(track.filename) + " (" + Math.floor(this.track.total_distance/100)/10+ "Km ^" + this.track.cumulative_elevation_gain + "m)";
                 } else {
@@ -338,7 +356,7 @@ export class CreateMapPage implements OnInit {
 
         // Create the final canvas (with map and footer)
         var mapBottomY=h;
-        var titleH=0; if ( this.map_title && this.map_title.length>0 ) titleH=Math.floor(1.5*font_size);
+        var titleH=0; if ( this.map_title && this.map_title.trim().length>0 ) titleH=Math.floor(1.5*font_size);
         h=mapBottomY+titleH+3.6*this.baseFontSize();        // new height adding blank footer
         this.canvas = document.createElement("canvas");     
         this.canvas.width = w;
@@ -394,7 +412,7 @@ export class CreateMapPage implements OnInit {
             ctx.fillStyle="rgba(0,0,0,1)";
             ctx.font = "bold "+titleH+"px Arial";
             y+=titleH;
-            ctx.fillText(this.map_title,x,y); 
+            ctx.fillText(this.map_title.trim(),x,y); 
         }
         var map_attribution = "Map data: © OpenStreetMap contributors. To learn more, visit http://www.openstreetmap.org/copyright.";
         if ( this.map_provider==='opentopomap' ) map_attribution = "Map data: © OpenStreetMap contributors, SRTM | Map display: © OpenTopoMap (CC-BY-SA). To learn more, visit https://opentopomap.org/";
@@ -452,19 +470,14 @@ export class CreateMapPage implements OnInit {
         }
 
         // Waypoints, START, FINISH
-        var wpts=[];
-        if ( this.include_waypoints ) for ( var i=0; i<this.track.waypoints.length; i++ ) wpts.push(this.track.waypoints[i]);
-        if ( this.include_start_and_finish ) {
-            p = this.track.points[0];
-            wpts.push({lat:p.lat,lon:p.lon,name:this.control.getString("START")});
-            p = this.track.points[n-1];
-            wpts.push({lat:p.lat,lon:p.lon,name:this.control.getString("FINISH")});
-        }
+        var wpts=this.points;
         if ( wpts.length>0 ) for ( var i=0; i<wpts.length; i++ ) {
             p = wpts[i];
-            x=scale*this.mData.mapWidthPx*(p.lon-this.mData.p1[0])/(this.mData.p2[0]-this.mData.p1[0]);
-            y=scale*(this.mData.mapHeightPx-this.mData.mapHeightPx*(p.lat-this.mData.p2[1])/(this.mData.p1[1]-this.mData.p2[1]));
-            this.paintWptOnCanvas(ctx,x,y,waypointSize,p.name);
+            if ( p.visible ) {
+                x=scale*this.mData.mapWidthPx*(p.lon-this.mData.p1[0])/(this.mData.p2[0]-this.mData.p1[0]);
+                y=scale*(this.mData.mapHeightPx-this.mData.mapHeightPx*(p.lat-this.mData.p2[1])/(this.mData.p1[1]-this.mData.p2[1]));
+                this.paintWptOnCanvas(ctx,x,y,waypointSize,p.name);
+            }
         }
 
     }
@@ -527,7 +540,10 @@ export class CreateMapPage implements OnInit {
 
     downloadMap () {
         // When the user taps the Download button --> downloads the map as PNG file
-        this.control.downloadCanvasAsPNGfile(this.canvas,"QRgeomap.png");
+        var title=this.map_title;
+        if ( title!="" ) title+=".";
+        title+="QRgeomap.png";
+        this.control.downloadCanvasAsPNGfile(this.canvas,title);
     }
 
 
