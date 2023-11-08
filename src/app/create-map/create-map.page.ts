@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Control } from '../services/control';
 import gpxParser from 'gpxparser';
 import { QRgeomap } from '../services/qrgeomap';
+import { IonAccordionGroup } from '@ionic/angular';
 
 @Component({
   selector: 'app-create-map',
@@ -9,7 +10,6 @@ import { QRgeomap } from '../services/qrgeomap';
   styleUrls: ['./create-map.page.scss'],
 })
 export class CreateMapPage implements OnInit {
-
 
   // The dimensions (pixels) of the map to be generated 
   MAP_WIDTH_PIXELS =  2560;
@@ -22,8 +22,6 @@ export class CreateMapPage implements OnInit {
   source_link="";
   color="#000000";
   line_width=2;
-  //include_waypoints=true;
-  //include_start_and_finish=true;
   map_title="";
 
 
@@ -34,6 +32,7 @@ export class CreateMapPage implements OnInit {
   track_loaded=false;           // true after the GPX file is loaded
   canvas;                       // the canvas for the final map (including the track, qr, footer...)
   mapCanvas=null;               // aux canvas with the map data (only!)
+  got_map=false;                 // true after map tiles are downloaded
   imageSrc="";                  // the image that will be shown on screen ( canvas.toDataURL() )
   mData;                        // aux object with data needed to create the map: bounds, ...
   mapReady=false;               // true when the map is ready to be downloaded
@@ -56,10 +55,20 @@ export class CreateMapPage implements OnInit {
   }
 
 
-  constructor(public control:Control) { }
+  constructor(public control:Control) { } 
+
+  @ViewChild('accordionGroup', { static: true }) accordionGroup: IonAccordionGroup;
+
+  setStep(number) {
+      setTimeout(()=>{
+            this.accordionGroup.value = ""+number;
+      },1000);  
+  }
 
 
   ngOnInit() {
+    // First step
+    this.setStep(1);
   }
 
 
@@ -103,6 +112,8 @@ export class CreateMapPage implements OnInit {
                     }
                     // Suggested title: filename (distance, elevation gain)
                     this.map_title = this.control.removeExtension(track.filename) + " (" + Math.floor(this.track.total_distance/100)/10+ "Km ^" + this.track.cumulative_elevation_gain + "m)";
+                    // Next step
+                    this.setStep(2);
                 } else {
                     this.control.alert("ERROR","UNABLE TO PARSE TRACK FILE");
                 }
@@ -120,6 +131,7 @@ export class CreateMapPage implements OnInit {
       this.mapCanvas=null;
       this.track=null;
       this.track_loaded=false;
+      this.got_map=false;
       this.mapReady=false;
       this.map_title="";
       this.source_link="https://www.qrgeomap.com";
@@ -174,8 +186,8 @@ export class CreateMapPage implements OnInit {
 
 
 
-  createMap () {
-        // Fires when the user taps the "Create" button --> Creates the map!
+  getMap () {
+        // Fires when the user taps the "Get Map" button --> get map tiles...
 
         if ( (this.track.points.length+this.track.waypoints.length)<2 ) {  // At least 2 points required
             this.control.alert("ERROR","INVALID FILE");
@@ -291,19 +303,12 @@ export class CreateMapPage implements OnInit {
 
 
         // CREATE THE MAP (DOWNLOAD TILES...)
-
-        if ( this.mapCanvas==null ) {
-
-            this.mapCanvas = document.createElement("canvas");
-            this.mapCanvas.width = this.mData.width;
-            this.mapCanvas.height = this.mData.height;
-            this.mData.canvasPixFactor = 1.0 * this.mapCanvas.width / this.mData.mapWidthPx;   
-            // Download tiles
-            this.getTile( this.mData.tile_x1,this.mData.tile_y1 ); // get the first tile (then second...)
-
-        } else { // 
-            this.whenAllTilesDrawn();
-        }
+        this.got_map=false;
+        this.mapCanvas = document.createElement("canvas");
+        this.mapCanvas.width = this.mData.width;
+        this.mapCanvas.height = this.mData.height;
+        this.mData.canvasPixFactor = 1.0 * this.mapCanvas.width / this.mData.mapWidthPx;   
+        this.getTile( this.mData.tile_x1,this.mData.tile_y1 ); // get the first tile (then second...)
 
   }
 
@@ -329,7 +334,10 @@ export class CreateMapPage implements OnInit {
                 if ( x<this.mData.tile_x2 ) {
                     this.getTile(x+1,this.mData.tile_y1);   // get next tile
                 } else {
-                    this.whenAllTilesDrawn();               // finished!
+                    // Finished! All tiles downloaded
+                    this.got_map=true;
+                    // Next step
+                    this.setStep(3);
                 }
             }
         };
@@ -342,8 +350,8 @@ export class CreateMapPage implements OnInit {
   }
 
 
-  whenAllTilesDrawn() {
-      // When all the tiles are downloaded --> Paint the track, waypoints, scale, QR and footer (title + attributtion)
+  redrawMap() {
+      // Refreshes the map: base map tiles + track + waypoints + scale + QR + footer (title + attributtion)
 
         var mw=this.mData.mapWidthPx;
         var mh=this.mData.mapHeightPx;

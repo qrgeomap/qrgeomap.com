@@ -1,4 +1,12 @@
 
+.createmap_steps_bg {
+    background-color: #c0c0c0;
+}
+
+.createmap_map_bg {
+    background-color: #ffffff;
+}
+
 .info {
     padding: 16px;
     background-color: #e8e8e8;
@@ -24,4 +32,8 @@
 .points_subtitle {
     font-weight: 600;
     margin-bottom: 20px;;
+}
+
+ion-accordion {
+    margin-bottom:1px;
 }

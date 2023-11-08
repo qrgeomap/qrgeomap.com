@@ -35,14 +35,17 @@
 // --------------- custom --------------
 
 
+.list-md {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
 
 /* Used in alerts, to allow text selection ! */
 .my-custom-alert-class {
     user-select: text!important;
 }
 
-
-// -- Para simular un ion-item que en realidad es un input type=file transparente... (para elegir un archivo)
 
 .fake_file_input_ion_item-btn_container-div {
     display: table; margin: 0 auto;   // center
