@@ -63,19 +63,25 @@ export class HomePage {
 
       var url:string=window.location.href;
       //console.log(url);
-      if ( url.includes("?i=") ) {
+
+      if ( url.includes("?i=") ) {  // URL includes link to image map --> Load it
+
             var img_url=decodeURIComponent(url.split("?i=")[1]);
-            console.log(img_url);
             this.loadMapFromImageFile(img_url);
-      }
 
-      // Check if scanned the QR code with the camera...
-      if ( url.includes("qrgeomap=") ) {
-          var msg="It looks like you scanned the QR code of a map image to get here. <br><br>To use a QR geomap image you need to (first) download the map image and (second) press the 'Map' button in this app to load the map image.";
-          if ( this.control.lang=="es" ) msg="Parece que escaneaste el código QR de una imagen de mapa para llegar aquí. <br><br>Para usar uno de estos mapas tienes que (primero) descargar la imagen del mapa y (segundo) presionar el botón 'Mapa' en esta aplicación para cargar la imagen del mapa.";
-          this.control.alert("HEY!",msg);
-      }
+      } else if ( url.includes("?p=") ) { // URL includes the "id" of a published map --> Load it
 
+            var id=decodeURIComponent(url.split("?p=")[1]);
+            var img_url="https://www.wandapps.com/_qrgeomap_hosting/index.php?a=get_image&id="+id;
+            this.loadMapFromImageFile(img_url);
+
+      } else if ( url.includes("qrgeomap=") ) { // Scanned the QR code (of a not published file) with the camera ...
+
+            var msg="It looks like you scanned the QR code of a map image to get here. <br><br>To use a QR geomap image you need to (first) download the map image and (second) press the 'Map' button in this app to load the map image.";
+            if ( this.control.lang=="es" ) msg="Parece que escaneaste el código QR de una imagen de mapa para llegar aquí. <br><br>Para usar uno de estos mapas tienes que (primero) descargar la imagen del mapa y (segundo) presionar el botón 'Mapa' en esta aplicación para cargar la imagen del mapa.";
+            this.control.alert("HEY!",msg);
+
+      }
 
       this.initialized=true;
       
@@ -127,6 +133,8 @@ export class HomePage {
   loadMapFromImageFile ( file ) {
       // Loads the (image) file, extracts geolocation from QR and shows on the map as Image Overlay layer
 
+      console.log(file);
+
       var img = new Image();
       img.crossOrigin = "Anonymous";
       img.onload = () => { 
@@ -153,10 +161,10 @@ export class HomePage {
 
               // Show toolbar with "Source" info (link), if present in the QR
               var url=geodata.url;
-              url=url.split("qrgeomap=")[0];
-              url=url.replace("?","");
+              if ( url.includes("?qrgeomap=") ) url=url.split("?qrgeomap=")[0];
+              else if ( url.includes("&qrgeomap=") ) url=url.split("&qrgeomap=")[0];
               this.loaded_map_url=url;
-              if ( this.loaded_map_url=="https://www.qrgeomap.com"||this.loaded_map_url=="https://www.qrgeomap.com/" ) this.loaded_map_url="";
+              if ( this.loaded_map_url.startsWith("https://www.qrgeomap.com") ) this.loaded_map_url="";
 
               this.loaded_map=true;
               this.source_bar_visible=true;

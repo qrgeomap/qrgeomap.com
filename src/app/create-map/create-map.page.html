@@ -17,7 +17,7 @@
 
             <ion-accordion value="1">
                 <ion-item slot="header" color="dark">
-                    <ion-label>1. {{'LOAD_TRACK'|translate}}</ion-label>
+                    <ion-label><span class="number_circle">1</span> {{'LOAD_TRACK'|translate}}</ion-label>
                 </ion-item>
                 <div slot="content">
                     <ion-list lines="none">
@@ -44,7 +44,7 @@
     
             <ion-accordion value="2" *ngIf="track_loaded">
                 <ion-item slot="header" color="dark">
-                    <ion-label>2. {{'MAP_PROVIDER'|translate}}</ion-label>
+                    <ion-label><span class="number_circle">2</span> {{'GET_MAP'|translate}}</ion-label>
                 </ion-item>
                 <div slot="content">
                     <ion-list lines="full">
@@ -57,7 +57,7 @@
                             </ion-select>
                         </ion-item>
                         <div class="ion-padding">
-                            <ion-button (click)="getMap()">{{'GET_MAP'|translate}}</ion-button>
+                            <ion-button (click)="getMap()"><ion-icon name="map-outline"></ion-icon>&nbsp; {{'GET_MAP'|translate}}</ion-button>
                         </div>
                     </ion-list>
                 </div>
@@ -65,7 +65,7 @@
     
             <ion-accordion value="3" *ngIf="track_loaded && got_map">
                 <ion-item slot="header" color="dark">
-                    <ion-label>3. {{'DRAW_MAP'|translate}}...</ion-label>
+                    <ion-label><span class="number_circle">3</span> {{'DRAW_MAP'|translate}}...</ion-label>
                 </ion-item>
                 <div slot="content">
                     <ion-list lines="full">
@@ -83,24 +83,26 @@
                         </ion-item>
                         <div class="points_container">
                             <div class="points_subtitle">{{'POINTS'|translate}}</div>
-                            <ion-item *ngFor="let point of points">
-                                <ion-input [(ngModel)]="point.name" [disabled]="!point.visible"></ion-input>
-                                <ion-toggle slot="end" [(ngModel)]="point.visible"></ion-toggle>
-                            </ion-item>  
+                            <div class="items_border">
+                                <ion-item *ngFor="let point of points">
+                                    <ion-input [(ngModel)]="point.name" [disabled]="!point.visible"></ion-input>
+                                    <ion-toggle slot="end" [(ngModel)]="point.visible"></ion-toggle>
+                                </ion-item>  
+                            </div>
                         </div>
+
+                        <ion-item>
+                            <ion-label position="stacked">{{'MAP_TITLE'|translate}}</ion-label>
+                            <ion-input placeholder="" [(ngModel)]="map_title"></ion-input>
+                        </ion-item>
 
                         <ion-item>
                             <ion-label position="stacked">{{'QR_SOURCE_LINK'|translate}}</ion-label>
                             <ion-input placeholder="" [(ngModel)]="source_link"></ion-input>
                         </ion-item>
-            
-                        <ion-item>
-                            <ion-label position="stacked">{{'MAP_TITLE'|translate}}</ion-label>
-                            <ion-input placeholder="" [(ngModel)]="map_title"></ion-input>
-                        </ion-item>
-            
+                        
                         <div class="ion-padding">
-                            <ion-button (click)="redrawMap()">{{'REDRAW_MAP'|translate}}</ion-button>
+                            <ion-button (click)="redrawMap()"><ion-icon name="refresh-outline"></ion-icon>&nbsp; {{'REDRAW_MAP'|translate}}</ion-button>
                         </div>
 
                     </ion-list>
@@ -117,9 +119,28 @@
         <img id='theImage' width="100%" src='{{ imageSrc }}'/>
 
         <div>
-            <ion-button *ngIf="mapReady" (click)="downloadMap()">{{'DOWNLOAD'|translate}}</ion-button>
+            <ion-button *ngIf="mapReady" (click)="downloadMap()"><ion-icon name="download-outline"></ion-icon>&nbsp; {{'DOWNLOAD'|translate}}</ion-button>
         </div>
 
+    </div>
+
+    <div id="publish_map" *ngIf="mapReady">
+        <div *ngIf="!publishData">
+            <div style="font-size:larger;"><b>{{'PUBLISH_MAP_TITLE'|translate}}</b></div><br>
+            <div>{{'PUBLISH_MAP_SUBTITLE'|translate}}</div>
+            <br>
+            <ion-button [disabled]="!mapReady" (click)="publishMap()"><ion-icon name="cloud-upload-outline"></ion-icon>&nbsp; {{'PUBLISH_MAP'|translate}}</ion-button>
+        </div>
+        <div *ngIf="publishData">
+            <div style="font-size:larger;"><b>{{'PUBLISHED_MAP_OK_TEXT'|translate}}</b></div><br>
+            <div>{{'PUBLISHED_MAP_URL_TEXT'|translate}}
+                <br><br><span style="font-size:larger;"><b><a href="{{publishData.url}}" target="_blank">{{publishData.url}}</a></b></span>
+            </div>
+            <div>
+                <br>{{'PUBLISHED_MAP_PRIVATE_KEY_TEXT'|translate}}
+                <br><br><b>{{publishData.key}}</b>
+            </div>
+        </div>
     </div>
 
 

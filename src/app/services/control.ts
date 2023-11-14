@@ -2,7 +2,7 @@ import { Injectable  } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { saveAs } from 'file-saver';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AlertController, MenuController, NavController  } from '@ionic/angular';
 
 
@@ -145,6 +145,24 @@ export class Control {
   }
 
 
+  // -------------------------- HTTP ----------------------------------
+
+  httpJsonPost ( url, postParams, onDataReceivedFunction, onErrorFunction ) {
+        // http post with JSON data
+        console.log(postParams);
+        let jsonHeaders: { [key: string]: string } = { 'Content-Type':'application/json' };
+        let httpOptions = { headers: new HttpHeaders(jsonHeaders) } 
+        this.http.post(url, postParams, httpOptions).subscribe({
+        next: (data) => {
+            onDataReceivedFunction(data);
+        },
+        error: (error) => {
+            onErrorFunction(error);
+        },
+        });      
+  }
+
+  
 
 
 }

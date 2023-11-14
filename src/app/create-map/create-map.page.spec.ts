@@ -5,7 +5,7 @@ import { CreateMapPage } from './create-map.page';
 
 describe('CreateMapPage', () => {
   let component: CreateMapPage;
-  let fixture: ComponentFixture<CreateMapPage>;
+  let fixture: ComponentFixture<CreateMapPage>; 
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({

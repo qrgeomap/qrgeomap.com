@@ -258,10 +258,15 @@ export class QRgeomap {
       // Returns the text (url) to be codified in the QR code. It will return a custom "base url" adding a parameter with the georreferencing 
       var url=baseURL;
       if ( url.includes("?") ) url+="&"; else url+="?";
+
+      topLeftLat=topLeftLat.toFixed(6);
+      topLeftLon=topLeftLon.toFixed(6);
+      bottomRightLat=bottomRightLat.toFixed(6);
+      bottomRightLon=bottomRightLon.toFixed(6);
+
       url+=`qrgeomap=${imageWidth}_${imageHeight}_${topLeftLat}_${topLeftLon}_${bottomRightLat}_${bottomRightLon}`;
       return url;
   }
-
 
 
   private static generateQR ( sizepx, text ) { 

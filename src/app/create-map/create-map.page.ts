@@ -11,10 +11,14 @@ import { IonAccordionGroup } from '@ionic/angular';
 })
 export class CreateMapPage implements OnInit {
 
+
+  // Published maps API
+  QRGEOMAP_HOSTING_API_URL = "https://www.wandapps.com/_qrgeomap_hosting/index.php";  // NOTE: Only accepts uploads from https://www.qrgeomap.com !
+
+
   // The dimensions (pixels) of the map to be generated 
   MAP_WIDTH_PIXELS =  2560;
   MAP_HEIGHT_PIXELS = 1792;  
-
 
 
   // Variables for user selections
@@ -32,10 +36,11 @@ export class CreateMapPage implements OnInit {
   track_loaded=false;           // true after the GPX file is loaded
   canvas;                       // the canvas for the final map (including the track, qr, footer...)
   mapCanvas=null;               // aux canvas with the map data (only!)
-  got_map=false;                 // true after map tiles are downloaded
+  got_map=false;                // true after map tiles are downloaded
   imageSrc="";                  // the image that will be shown on screen ( canvas.toDataURL() )
   mData;                        // aux object with data needed to create the map: bounds, ...
   mapReady=false;               // true when the map is ready to be downloaded
+  publishData=null;             // aux object with data about the published map 
 
   points=[];                    // array with points to be painted (start,waypoints,finish)
 
@@ -126,15 +131,16 @@ export class CreateMapPage implements OnInit {
 
   clearAll() {
       // Clears all the data to start map creation
+      this.track=null;
+      this.track_loaded=false;
       this.imageSrc="";
       this.canvas=null;
       this.mapCanvas=null;
-      this.track=null;
-      this.track_loaded=false;
       this.got_map=false;
       this.mapReady=false;
       this.map_title="";
       this.source_link="https://www.qrgeomap.com";
+      this.publishData=null;
   }
 
 
@@ -143,7 +149,8 @@ export class CreateMapPage implements OnInit {
       // Fires when the user selects another map provider --> clears the map (force user to create again)
       this.imageSrc="";       
       this.mapCanvas=null;    
-      this.mapReady=false;    
+      this.mapReady=false;  
+      this.publishData=null;  
   }
 
 
@@ -350,8 +357,10 @@ export class CreateMapPage implements OnInit {
   }
 
 
-  redrawMap() {
+  redrawMap( whenFinishedFunction=null ) {
       // Refreshes the map: base map tiles + track + waypoints + scale + QR + footer (title + attributtion)
+
+        this.publishData=null;
 
         var mw=this.mData.mapWidthPx;
         var mh=this.mData.mapHeightPx;
@@ -439,6 +448,7 @@ export class CreateMapPage implements OnInit {
             .then(()=>{
                 this.imageSrc = this.canvas.toDataURL();    // show on screen
                 this.mapReady=true;                         // Ready!
+                if ( whenFinishedFunction!=null ) whenFinishedFunction();
             });      
 
   }
@@ -530,7 +540,7 @@ export class CreateMapPage implements OnInit {
   
 
 
-    drawLine ( ctx,x1,y1,x2,y2,color,lineWidth ) {
+    drawLine ( ctx,x1,y1,x2,y2,color,lineWidth ) { 
         // Draws a line
         ctx.strokeStyle=color; 
         ctx.lineWidth=lineWidth;
@@ -553,7 +563,6 @@ export class CreateMapPage implements OnInit {
         title+="QRgeomap.png";
         this.control.downloadCanvasAsPNGfile(this.canvas,title);
     }
-
 
 
 
@@ -601,6 +610,48 @@ export class CreateMapPage implements OnInit {
         var L1=this.tile2lat(tile,zoom);
         var L2=this.tile2lat(tile+1,zoom);
         return Math.floor(256*(lat-L1)/(L2-L1));
+    }
+
+
+
+
+
+
+
+
+
+
+    // ---------- Publish Map --------------
+
+
+    publishMap() {
+        // Publish the map image and get a link to use it
+
+        // Prepare: get an "id" for the new map image
+        this.control.httpJsonPost(this.QRGEOMAP_HOSTING_API_URL,{function:"prepare_new_file"},(data)=>{
+            if ( data.status=="OK" ) {
+                var id=data.id;
+                var file_key=data.file_key;
+                // Refresh the map with the link to the map "id" and upload it
+                this.source_link = "https://www.qrgeomap.com/?p="+id;
+                this.redrawMap(()=>{
+                    const imageBase64 = this.canvas.toDataURL("image/png").split(';base64,')[1];
+                    var params= {   function:"save_file", id:id, file_key:file_key, 
+                                    title:this.map_title,
+                                    topLeftLat:this.mData.p1[1],topLeftLon:this.mData.p1[0],bottomRightLat:this.mData.p2[1],bottomRightLon:this.mData.p2[0],
+                                    imageBase64: imageBase64
+                                };
+                    this.control.httpJsonPost(this.QRGEOMAP_HOSTING_API_URL,params,(data)=>{
+                        if ( data.status=="OK" ) {
+                            this.publishData = { url:""+this.source_link, key:""+id+"-"+file_key };
+                        } else { this.control.alert("ERROR",data.error); }
+                    },(err)=>{ console.log(err); this.control.alert("ERROR","UNABLE_TO_PUBLISH_MAP"); });
+                });
+            } else { 
+                this.control.alert("ERROR",data.error); 
+            }
+        },(err)=>{ console.log(err); this.control.alert("ERROR","UNABLE_TO_PUBLISH_MAP"); });
+        
     }
 
 
