@@ -164,5 +164,19 @@ export class Control {
 
   
 
+  // -------------------------- MISC ----------------------------------
+
+  async getImgAsync ( imgSrc ) {
+        // Loads an image (async!) and returns it.
+        return new Promise( (resolve, reject) => { 
+            var img = new Image();
+            img.onload = () => { 
+                resolve(img);
+            }; 
+            img.src = imgSrc;         
+        }); 
+  } 
+
+
 
 }

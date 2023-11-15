@@ -324,6 +324,26 @@ export class CreateMapPage implements OnInit {
         // Downloads tile (x,y) and then the next one... 
         // ( if it was the last one --> run whenAllTilesDrawn )
 
+        var z=this.mData.zoomLevel;
+        var imgsrc;
+        switch ( this.map_provider ) {
+            case "mapbox_outdoors":
+                imgsrc=`https://www.wandapps.com/_qrgeomap_tiles/tiles_proxy.php?t=outdoors&z=${z}&x=${x}&y=${y}`;
+                break;
+            case "mapbox_satellite":
+                imgsrc=`https://www.wandapps.com/_qrgeomap_tiles/tiles_proxy.php?t=satellite&z=${z}&x=${x}&y=${y}`;
+                break;
+            case "cyclosm":
+                imgsrc="https://a.tile-cyclosm.openstreetmap.fr/cyclosm/"+z+"/"+x+"/"+y+".png";
+                break;
+            case "opentopomap":
+                imgsrc="https://a.tile.opentopomap.org/"+z+"/"+x+"/"+y+".png";
+                break;
+            default:
+                imgsrc="https://a.tile.openstreetmap.org/"+z+"/"+x+"/"+y+".png";
+                break;    
+        }
+
         var img=new Image();
         img.setAttribute('crossOrigin', 'anonymous'); 
         img.onload = () => {
@@ -348,16 +368,13 @@ export class CreateMapPage implements OnInit {
                 }
             }
         };
-        var z=this.mData.zoomLevel;
         // Request the tile
-        if ( this.map_provider=='openstreetmap' ) img.src = "https://a.tile.openstreetmap.org/"+z+"/"+x+"/"+y+".png";
-        else if ( this.map_provider=='opentopomap' ) img.src= "https://a.tile.opentopomap.org/"+z+"/"+x+"/"+y+".png";
-        else if ( this.map_provider=='cyclosm' ) img.src= "https://a.tile-cyclosm.openstreetmap.fr/cyclosm/"+z+"/"+x+"/"+y+".png";
+        img.src = imgsrc;
 
   }
 
 
-  redrawMap( whenFinishedFunction=null ) {
+  async redrawMap( whenFinishedFunction=null ) {
       // Refreshes the map: base map tiles + track + waypoints + scale + QR + footer (title + attributtion)
 
         this.publishData=null;
@@ -383,9 +400,44 @@ export class CreateMapPage implements OnInit {
         ctx.fillRect(0,0,w,h);
         ctx.drawImage(this.mapCanvas,0,0);
 
+
+        // Attibution (inside map; bottom-right)
+        var map_attribution;
+        map_attribution = "© OpenStreetMap contributors";
+        if ( this.map_provider==='opentopomap' ) map_attribution = "Data: © OpenStreetMap contributors, SRTM | Display: © OpenTopoMap (CC-BY-SA)";
+        if ( this.map_provider==='cyclosm' ) map_attribution = "Data: © OpenStreetMap contributors | Style: CyclOSM";
+        if ( this.map_provider.startsWith('mapbox_') ) map_attribution = "© Mapbox © OpenStreetMap"
+        var txt=" "+map_attribution;
+        ctx.font = font_size+"px Arial";
+        var tw=ctx.measureText(txt).width;
+        var th=font_size;
+        ctx.fillStyle="rgba(255,255,255,0.33)";
+        var pd=font_size/2;
+        ctx.fillRect(w-tw-2*pd,mapBottomY-th-3*pd,tw+2*pd,th+3*pd);
+        ctx.fillStyle="rgba(0,0,0,0.75)";
+        ctx.fillText(txt,w-tw-pd,mapBottomY-th+2);
+
         // Line (map/footer separator)
         ctx.fillStyle="rgba(0,0,0,0.25)";
         ctx.fillRect(0,mapBottomY-1,w,1);
+
+        var padding_left = font_size*0.75;
+
+        // Mapbox logo ?
+        var logoOnLeft = this.map_provider.startsWith('mapbox_');
+        if ( logoOnLeft ) {
+            var imgLogo:any=await this.control.getImgAsync("/assets/mapbox-logo-white.svg");
+            var asp = imgLogo.height / imgLogo.width;
+            var lw = 200;
+            var lh = lw * asp;
+            var lx = padding_left;
+            var ly = mapBottomY-padding_left-lh;
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = 'rgba(0,0,0,0.99)';  
+            ctx.drawImage(imgLogo,lx,ly,lw,lh);            
+            ctx.shadowBlur = 0;
+            ctx.shadowColor = 'transparent';
+        }
 
         // Map Scale
         var kmsPerPixel=1.0*this.mData.mapWidthKms/w;
@@ -403,10 +455,12 @@ export class CreateMapPage implements OnInit {
                     if (sw>200) {
                         sw=sw/2.5;
                         stxt="100 m";
+                        /*
                         if (sw>150) {
                             sw=sw/2;
                             stxt="50 m";
                         }
+                        */
                     }
                 }
         }
@@ -414,15 +468,16 @@ export class CreateMapPage implements OnInit {
         ctx.font = font_size+"px Arial";
         var padding_escala=font_size/2;
         var sh=font_size+2*padding_escala;
-        var sx=font_size;
-        var sy=mapBottomY-30-font_size-2*padding_escala;
+        var sx=padding_left;                                // scale: on the left
+        var sy=mapBottomY-sh-padding_left;                  // bottom
+        if ( logoOnLeft ) sx=(w-sw)/2;                      // but if logo is on the left --> scale is centered!
         ctx.fillRect(sx,sy, sw,sh);
         ctx.fillStyle="rgba(255,255,255,0.6)";
         const lineWidth = ctx.measureText(stxt).width;
         const lineHeight = ctx.measureText('M').width; // trick
         ctx.fillText(stxt,sx+(sw-lineWidth)/2,sy+(sh+lineHeight)/2); 
 
-        // Map Title and Attribution
+        // Footer: Map Title and Attribution
         var x=font_size;
         var y=mapBottomY+font_size*0.8;
         if ( titleH>0 ) {
@@ -431,9 +486,10 @@ export class CreateMapPage implements OnInit {
             y+=titleH;
             ctx.fillText(this.map_title.trim(),x,y); 
         }
-        var map_attribution = "Map data: © OpenStreetMap contributors. To learn more, visit http://www.openstreetmap.org/copyright.";
+        map_attribution = "Map data: © OpenStreetMap contributors. To learn more, visit https://www.openstreetmap.org/copyright.";
         if ( this.map_provider==='opentopomap' ) map_attribution = "Map data: © OpenStreetMap contributors, SRTM | Map display: © OpenTopoMap (CC-BY-SA). To learn more, visit https://opentopomap.org/";
         if ( this.map_provider==='cyclosm' ) map_attribution = "Map data: © OpenStreetMap contributors | Style: CyclOSM . To learn more, visit https://www.cyclosm.org/";
+        if ( this.map_provider.startsWith('mapbox_') ) map_attribution = "Map data: © Mapbox, © OpenStreetMap and their data sources. To learn more, visit https://www.mapbox.com/about/maps/ and https://www.openstreetmap.org/copyright."
         var attribution=""+new Date().getFullYear()+" | Made with QRgeomap.com | "+map_attribution;
         y+=font_size*((titleH==0)?1.3:1.6);
         ctx.font = font_size+"px Arial";
@@ -452,6 +508,11 @@ export class CreateMapPage implements OnInit {
             });      
 
   }
+
+
+
+
+
 
 
   paintTrackOnCanvas() {
