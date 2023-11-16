@@ -51,8 +51,9 @@
                         <ion-item>
                             <ion-label>{{'MAP_PROVIDER'|translate}}</ion-label>
                             <ion-select interface="popover" style='max-width: 100%;' [(ngModel)]="map_provider" (ionChange)="onChangeMapProvider()">
-                                <ion-select-option value="mapbox_outdoors">Mapbox outdoors</ion-select-option>
                                 <ion-select-option value="mapbox_satellite">Mapbox satellite</ion-select-option>
+                                <ion-select-option value="mapbox_outdoors">Mapbox outdoors</ion-select-option>
+                                <ion-select-option value="mapbox_satellite+outdoors">Mapbox satellite+outdoors</ion-select-option>
                                 <ion-select-option value="openstreetmap">OpenStreetMap</ion-select-option>
                                 <ion-select-option value="cyclosm">CyclOSM</ion-select-option> 
                                 <ion-select-option value="opentopomap">OpenTopoMap</ion-select-option> 

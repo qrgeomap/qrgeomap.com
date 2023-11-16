@@ -164,7 +164,7 @@ export class Control {
 
   
 
-  // -------------------------- MISC ----------------------------------
+  // -------------------------- IMAGES ----------------------------------
 
   async getImgAsync ( imgSrc ) {
         // Loads an image (async!) and returns it.

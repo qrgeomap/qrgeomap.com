@@ -320,13 +320,19 @@ export class CreateMapPage implements OnInit {
   }
 
 
-  getTile( x,y ) {
+  getTile( x,y,layer=0 ) {
         // Downloads tile (x,y) and then the next one... 
         // ( if it was the last one --> run whenAllTilesDrawn )
 
         var z=this.mData.zoomLevel;
         var imgsrc;
+        var has2layers=false;
         switch ( this.map_provider ) {
+            case "mapbox_satellite+outdoors":
+                has2layers=true;
+                var t=(layer==0)?"satellite":"outdoors";
+                imgsrc=`https://www.wandapps.com/_qrgeomap_tiles/tiles_proxy.php?t=${t}&z=${z}&x=${x}&y=${y}`;
+                break;
             case "mapbox_outdoors":
                 imgsrc=`https://www.wandapps.com/_qrgeomap_tiles/tiles_proxy.php?t=outdoors&z=${z}&x=${x}&y=${y}`;
                 break;
@@ -352,9 +358,32 @@ export class CreateMapPage implements OnInit {
             var f=this.mData.canvasPixFactor;
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = 'high';
-            ctx.drawImage(img, f*(256*(x-this.mData.tile_x1)-this.mData.offsetX), f*(256*(y-this.mData.tile_y1)-this.mData.offsetY), f*256,f*256);
-            this.imageSrc = this.mapCanvas.toDataURL();     // show on screen
-            // Next / Finished ?
+            var tile_img=null;
+            if ( layer==0 ) {
+                ctx.globalAlpha = 1;
+                tile_img=img;
+            } else { // layer==1
+                ctx.globalAlpha = 0.5; // semitransparent
+                // Optimize levels
+                var c = document.createElement("canvas"); c.width=256; c.height=256; 
+                var ct=c.getContext('2d'); 
+                ct.drawImage(img,0,0);
+                var imgData = ct.getImageData(0,0,256,256);
+                var pix = imgData.data;
+                for ( var i=0,n=pix.length; i<n; i+=4 ) {
+                    this.changeBrightnessContrast(pix,i,-75,+125);
+                }
+                ct.putImageData(imgData,0,0);
+                tile_img=c;
+            }
+            ctx.drawImage(tile_img, f*(256*(x-this.mData.tile_x1)-this.mData.offsetX), f*(256*(y-this.mData.tile_y1)-this.mData.offsetY), f*256,f*256);
+            // refresh screen
+            this.imageSrc = this.mapCanvas.toDataURL();     
+            // Next layer / Next tile / Finished ?
+            if ( has2layers && layer==0 ) { 
+                this.getTile(x,y,1); // Get the second layer
+                return;
+            }
             if ( y<this.mData.tile_y2 ) { // next row
                 this.getTile(x,y+1);
             } else { // next column
@@ -372,6 +401,28 @@ export class CreateMapPage implements OnInit {
         img.src = imgsrc;
 
   }
+
+    private changeBrightnessContrast ( pix,i, brightness, contrast ) {
+        var r=pix[i+0];
+        var g=pix[i+1];
+        var b=pix[i+2];
+        r=this.truncate(r+brightness);
+        g=this.truncate(g+brightness);
+        b=this.truncate(b+brightness);
+        var factor=(259*(contrast+255))/(255*(259-contrast));
+        r=this.truncate(factor*(r-128)+128);
+        g=this.truncate(factor*(g-128)+128);
+        b=this.truncate(factor*(b-128)+128);
+        pix[i+0]=r;
+        pix[i+1]=g;
+        pix[i+2]=b;
+    }
+
+    private truncate(value) {
+        if (value<0) return 0;
+        if (value>255) return 255;
+        return value;
+    }
 
 
   async redrawMap( whenFinishedFunction=null ) {
