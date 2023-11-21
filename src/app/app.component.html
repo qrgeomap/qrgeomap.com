@@ -14,9 +14,15 @@
 
 
         <ion-item button (click)="control.navigate('about',{})">
-            <ion-icon class="item-icon-ionicon" name='information-circle-outline'></ion-icon><span text-wrap class="small-letter"> {{'ABOUT'|translate}}</span>
+            <span text-wrap class="small-letter"> {{'ABOUT'|translate}}</span>
         </ion-item>
-    
+
+        <ion-item button (click)="control.showLegal(true)">
+            <span text-wrap class="small-letter"> {{'LEGAL_ALL'|translate}}</span>
+        </ion-item>
+
+        <ion-item-divider></ion-item-divider>
+      
         <ion-item>
             <div class='fake_file_input_ion_item-btn_container-div'> 
                 <label for="input_map_menu" class="fake_file_input_ion_item-btn_behind">
@@ -32,6 +38,24 @@
 
 
       </ion-list>
+
+
+
+      <ion-modal [isOpen]="control.isLegalModalOpen" [canDismiss]="control.canDismissLegalModal">
+        <ng-template>
+          <ion-header>
+            <ion-toolbar>
+              <ion-title>{{'LEGAL'|translate}}</ion-title>
+              <ion-buttons slot="end">
+                <ion-button (click)="control.showLegal(false)"><ion-icon name="checkmark-circle-outline" size="large"></ion-icon></ion-button>
+              </ion-buttons>
+            </ion-toolbar>
+          </ion-header>
+          <ion-content class="ion-padding">
+            <app-legal></app-legal>
+          </ion-content>
+        </ng-template>
+      </ion-modal>
 
 
     </ion-content>

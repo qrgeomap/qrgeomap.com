@@ -15,10 +15,11 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Control } from './services/control';
 import { ComponentsModule } from './components/components.module';
+import { LegalComponent } from './legal/legal.component';
 
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent,LegalComponent],
   imports: [
     BrowserModule, 
     IonicModule.forRoot(), 

@@ -425,6 +425,8 @@ export class CreateMapPage implements OnInit {
     }
 
 
+  source_link_in_qr=""; 
+
   async redrawMap( whenFinishedFunction=null ) {
       // Refreshes the map: base map tiles + track + waypoints + scale + QR + footer (title + attributtion)
 
@@ -551,7 +553,8 @@ export class CreateMapPage implements OnInit {
         this.paintTrackOnCanvas();
 
         // The QR
-        QRgeomap.printQRgeomapOnImage ( this.canvas, this.mData.width, this.mData.height, this.mData.p1[1],this.mData.p1[0], this.mData.p2[1],this.mData.p2[0], this.source_link )
+        this.source_link_in_qr=this.source_link;
+        QRgeomap.printQRgeomapOnImage ( this.canvas, this.mData.width, this.mData.height, this.mData.p1[1],this.mData.p1[0], this.mData.p2[1],this.mData.p2[0], this.source_link_in_qr )
             .then(()=>{
                 this.imageSrc = this.canvas.toDataURL();    // show on screen
                 this.mapReady=true;                         // Ready!
@@ -560,6 +563,9 @@ export class CreateMapPage implements OnInit {
 
   }
 
+  mapIsPublishable() {
+        return ( this.source_link_in_qr=="https://www.qrgeomap.com" );
+  }
 
 
 
@@ -736,7 +742,7 @@ export class CreateMapPage implements OnInit {
     // ---------- Publish Map --------------
 
 
-    publishMap() {
+    publishMap() { 
         // Publish the map image and get a link to use it
 
         // Prepare: get an "id" for the new map image
@@ -755,7 +761,11 @@ export class CreateMapPage implements OnInit {
                                 };
                     this.control.httpJsonPost(this.QRGEOMAP_HOSTING_API_URL,params,(data)=>{
                         if ( data.status=="OK" ) {
-                            this.publishData = { url:""+this.source_link, key:""+id+"-"+file_key };
+
+                            // Published! Show link and key
+                            this.publishData = { url:""+this.source_link_in_qr, key:""+id+"-"+file_key };
+                            this.source_link = "https://www.qrgeomap.com";
+                            
                         } else { this.control.alert("ERROR",data.error); }
                     },(err)=>{ console.log(err); this.control.alert("ERROR","UNABLE_TO_PUBLISH_MAP"); });
                 });

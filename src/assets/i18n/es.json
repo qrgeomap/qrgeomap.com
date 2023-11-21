@@ -5,7 +5,7 @@
 	"GET_MAP":"Obtener Mapa",
 	"CREATE_MAP":"Crear Mapa",
 	"DRAW_MAP":"Dibujar en el Mapa",
-	"REDRAW_MAP":"Redibujar Mapa",
+	"DRAW":"Dibujar",
 
 	"SOURCE":"Origen",
 	"LOAD_TRACK":"Abrir Track",
@@ -20,15 +20,21 @@
 	"LINE_WIDTH":"Grosor de línea", 
 	"MAP_PROVIDER":"Proveedor del Mapa",
 	"QR_SOURCE_LINK":"Enlace de origen para el código QR",
+	"QR_SOURCE_LINK_NOTE":"NOTA: Si introduces un enlace para el QR que no sea 'https://www.qrgeomap.com' el mapa no se podrá alojar (publicar) aquí.",
 	"MAP_TITLE":"Título del mapa",
 	"DOWNLOAD":"Descargar",
 
 	"PUBLISH_MAP":"PUBLICAR MAPA",
-	"PUBLISH_MAP_TITLE":"¿Quieres publicar esta imagen de mapa y obtener un enlace directo para usarla?",
-	"PUBLISH_MAP_SUBTITLE":"Ten en cuenta por favor que el enlace que se generará y la imagen del mapa que has creado serán completamente públicos.",
+	"PUBLISH_MAP_TITLE":"¿Quieres publicar este mapa y obtener un enlace directo para usarlo?",
+	"PUBLISH_MAP_SUBTITLE":"Ten en cuenta que el mapa será completamente público.",
 	"PUBLISHED_MAP_OK_TEXT":"¡Mapa publicado exitosamente!",
 	"PUBLISHED_MAP_URL_TEXT":"El enlace público de este mapa es:",
 	"PUBLISHED_MAP_PRIVATE_KEY_TEXT":"El código que se muestra a continuación es la clave privada (identificador único) del mapa que acabas de publicar. Anótalo por si en algún momento quieres solicitar algo referente a este mapa (ej: eliminarlo).",
+
+	"LEGAL":"Legal",
+	"LEGAL_ALL":"Aviso Legal, Términos de Uso y Política de Privacidad",
+	"COPY":"Copiar",
+	"COPIED":"Copiado en el portapapeles",
 
 	"NO":"No",
 	"YES":"Sí",

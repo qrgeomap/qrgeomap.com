@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { saveAs } from 'file-saver';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { AlertController, MenuController, NavController  } from '@ionic/angular';
+import { AlertController, MenuController, NavController, ToastController  } from '@ionic/angular';
 
 
 
@@ -23,6 +23,7 @@ export class Control {
   constructor ( public translate: TranslateService, 
                 public http:HttpClient,
                 public alertCtrl:AlertController,
+                public toastCtrl:ToastController,
                 public menuController:MenuController,
                 private router: Router,
                 private navController:NavController
@@ -89,6 +90,11 @@ export class Control {
     }
 
 
+    closeMenu() {
+        // Closes the app menu
+        this.menuController.close();
+    }
+
 
 
     // Dialogs...
@@ -110,11 +116,33 @@ export class Control {
 
     }
 
+    async toast ( txt, duration=3000 ) {
+        // shows a toast message
 
-    closeMenu() {
-        // Closes the app menu
-        this.menuController.close();
-   }
+        var text:any=await this.translate.get([txt]);
+        let toast = await this.toastCtrl.create({
+            message: text,
+            duration: duration,
+            position: 'bottom'
+        });
+        if (text&&text.length>0) toast.present();
+    }
+    
+
+    // Legal modal
+
+    isLegalModalOpen = false;
+    canDismissLegalModal = false;
+
+    showLegal(v) {
+        this.canDismissLegalModal=true;
+        this.closeMenu();
+        setTimeout(()=>{
+            this.isLegalModalOpen=v;
+            this.canDismissLegalModal=false;
+        },1);
+    }
+  
 
 
 
@@ -164,7 +192,7 @@ export class Control {
 
   
 
-  // -------------------------- IMAGES ----------------------------------
+  // -------------------------- MISC ----------------------------------
 
   async getImgAsync ( imgSrc ) {
         // Loads an image (async!) and returns it.
@@ -176,6 +204,18 @@ export class Control {
             img.src = imgSrc;         
         }); 
   } 
+
+    
+  async copyToClipboard ( text ) {
+        // Copy "text" to clipboard
+        var input = document.createElement('textarea');
+        input.innerHTML = text;
+        document.body.appendChild(input);
+        input.select();
+        var result = document.execCommand('copy');
+        document.body.removeChild(input);
+        this.toast("COPIED");
+  }
 
 
 

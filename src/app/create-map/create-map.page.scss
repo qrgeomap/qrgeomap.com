@@ -69,3 +69,20 @@ ion-accordion {
     padding: 16px;
     font-size: 14px;
 }
+
+#qr_link_note {
+    padding: 4px 16px;
+    font-size: smaller;
+    opacity: .5;
+}
+
+.publish_map_title {
+    font-size: larger;
+    font-weight: 700;
+}
+
+.legal_link {
+    text-decoration: underline;
+    font-weight: 600;
+    cursor: pointer;
+}

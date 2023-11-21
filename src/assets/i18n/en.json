@@ -5,7 +5,7 @@
 	"GET_MAP":"Get Map",
 	"CREATE_MAP":"Create Map",
 	"DRAW_MAP":"Draw on the Map",
-	"REDRAW_MAP":"Redraw Map",
+	"DRAW":"Draw",
 
 	"SOURCE":"Source",
 	"LOAD_TRACK":"Load Track",
@@ -20,15 +20,21 @@
 	"LINE_WIDTH":"Line width",
 	"MAP_PROVIDER":"Map provider",
 	"QR_SOURCE_LINK":"Source link for the QR code",
+	"QR_SOURCE_LINK_NOTE":"NOTE: If you enter a link for the QR other than 'https://www.qrgeomap.com' the map cannot be hosted (published) here.",
 	"MAP_TITLE":"Map title",
 	"DOWNLOAD":"Download",
 
 	"PUBLISH_MAP":"PUBLISH MAP",
-	"PUBLISH_MAP_TITLE":"Do you want to post this map image and get a direct link to use it?",
-	"PUBLISH_MAP_SUBTITLE":"Please note that the link to be generated and the map image you have created will be completely public.",
+	"PUBLISH_MAP_TITLE":"Do you want to post this map and get a direct link to use it?",
+	"PUBLISH_MAP_SUBTITLE":"Please note that this map will be completely public.",
 	"PUBLISHED_MAP_OK_TEXT":"Map successfully published!",
 	"PUBLISHED_MAP_URL_TEXT":"The public link for this map is:",
 	"PUBLISHED_MAP_PRIVATE_KEY_TEXT":"The code shown below is the private key (unique identifier) of the map you just published. Write it down in case you ever want to request something about this map (for example, delete it)",
+
+	"LEGAL":"Legal",
+	"LEGAL_ALL":"Legal Notice, Terms of Use and Privacy Policy",
+	"COPY":"Copy",
+	"COPIED":"Copied to clipboard",
 
 	"NO":"No",
 	"YES":"Yes",

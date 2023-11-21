@@ -103,9 +103,10 @@
                             <ion-label position="stacked">{{'QR_SOURCE_LINK'|translate}}</ion-label>
                             <ion-input placeholder="" [(ngModel)]="source_link"></ion-input>
                         </ion-item>
+                        <div id="qr_link_note">{{'QR_SOURCE_LINK_NOTE'|translate}}</div>
                         
                         <div class="ion-padding">
-                            <ion-button (click)="redrawMap()"><ion-icon name="refresh-outline"></ion-icon>&nbsp; {{'REDRAW_MAP'|translate}}</ion-button>
+                            <ion-button (click)="redrawMap()"><ion-icon name="refresh-outline"></ion-icon>&nbsp; {{'DRAW'|translate}}</ion-button>
                         </div>
 
                     </ion-list>
@@ -127,12 +128,12 @@
 
     </div>
 
-    <div id="publish_map" *ngIf="mapReady">
+    <div id="publish_map" *ngIf="mapReady && mapIsPublishable()">
         <div *ngIf="!publishData">
-            <div style="font-size:larger;"><b>{{'PUBLISH_MAP_TITLE'|translate}}</b></div><br>
+            <div style="font-size:larger;"><span class="publish_map_title">{{'PUBLISH_MAP_TITLE'|translate}}</span></div><br>
             <div>{{'PUBLISH_MAP_SUBTITLE'|translate}}</div>
-            <br>
-            <ion-button [disabled]="!mapReady" (click)="publishMap()"><ion-icon name="cloud-upload-outline"></ion-icon>&nbsp; {{'PUBLISH_MAP'|translate}}</ion-button>
+            <p><a role="button" (click)="control.showLegal(true)"><span class="legal_link">{{'LEGAL_ALL'|translate}}</span></a></p>
+            <p><ion-button [disabled]="!mapReady" (click)="publishMap()"><ion-icon name="cloud-upload-outline"></ion-icon>&nbsp; {{'PUBLISH_MAP'|translate}}</ion-button></p>
         </div>
         <div *ngIf="publishData">
             <div style="font-size:larger;"><b>{{'PUBLISHED_MAP_OK_TEXT'|translate}}</b></div><br>
