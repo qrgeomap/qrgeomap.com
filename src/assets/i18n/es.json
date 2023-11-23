@@ -24,6 +24,8 @@
 	"MAP_TITLE":"Título del mapa",
 	"DOWNLOAD":"Descargar",
 
+	"DOWNLOAD_NOTE":"NOTA: Si vas a publicar el mapa ten en cuenta que al pulsar el botón 'Publicar Mapa' el mapa se redibujará (para incluir en el código QR el enlace donde se aloje el mapa). En ese caso publica el mapa primero y luego si quieres podrás también descargarlo (el QR inluirá ya el enlace).",
+
 	"PUBLISH_MAP":"PUBLICAR MAPA",
 	"PUBLISH_MAP_TITLE":"¿Quieres publicar este mapa y obtener un enlace directo para usarlo?",
 	"PUBLISH_MAP_SUBTITLE":"Ten en cuenta que el mapa será completamente público.",

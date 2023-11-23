@@ -24,6 +24,8 @@
 	"MAP_TITLE":"Map title",
 	"DOWNLOAD":"Download",
 
+	"DOWNLOAD_NOTE":"NOTE: If you are going to publish the map, keep in mind that when you press the 'Publish Map' button the map will be redrawn (to include in the QR code the link where the map is hosted). In that case, publish the map first and then if you want you can also download it (the QR will already include the link).",
+
 	"PUBLISH_MAP":"PUBLISH MAP",
 	"PUBLISH_MAP_TITLE":"Do you want to post this map and get a direct link to use it?",
 	"PUBLISH_MAP_SUBTITLE":"Please note that this map will be completely public.",

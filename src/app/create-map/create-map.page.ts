@@ -370,9 +370,7 @@ export class CreateMapPage implements OnInit {
                 ct.drawImage(img,0,0);
                 var imgData = ct.getImageData(0,0,256,256);
                 var pix = imgData.data;
-                for ( var i=0,n=pix.length; i<n; i+=4 ) {
-                    this.changeBrightnessContrast(pix,i,-75,+125);
-                }
+                for ( var i=0,n=pix.length; i<n; i+=4 ) this.changeBrightnessContrast(pix,i,-75,+150);
                 ct.putImageData(imgData,0,0);
                 tile_img=c;
             }
@@ -401,6 +399,7 @@ export class CreateMapPage implements OnInit {
         img.src = imgsrc;
 
   }
+
 
     private changeBrightnessContrast ( pix,i, brightness, contrast ) {
         var r=pix[i+0];
@@ -564,7 +563,7 @@ export class CreateMapPage implements OnInit {
   }
 
   mapIsPublishable() {
-        return ( this.source_link_in_qr=="https://www.qrgeomap.com" );
+        return ( this.source_link_in_qr=="https://www.qrgeomap.com" || this.source_link_in_qr.startsWith("https://www.qrgeomap.com/") );
   }
 
 
@@ -760,6 +759,7 @@ export class CreateMapPage implements OnInit {
                                     imageBase64: imageBase64
                                 };
                     this.control.httpJsonPost(this.QRGEOMAP_HOSTING_API_URL,params,(data)=>{
+                        console.log(data);
                         if ( data.status=="OK" ) {
 
                             // Published! Show link and key

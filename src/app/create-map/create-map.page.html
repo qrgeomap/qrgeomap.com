@@ -122,8 +122,9 @@
 
         <img id='theImage' width="100%" src='{{ imageSrc }}'/>
 
-        <div>
-            <ion-button *ngIf="mapReady" (click)="downloadMap()"><ion-icon name="download-outline"></ion-icon>&nbsp; {{'DOWNLOAD'|translate}}</ion-button>
+        <div *ngIf="mapReady">
+            <p><ion-button (click)="downloadMap()"><ion-icon name="download-outline"></ion-icon>&nbsp; {{'DOWNLOAD'|translate}}</ion-button></p>
+            <p class="note" *ngIf="!publishData">{{'DOWNLOAD_NOTE'|translate}}</p>
         </div>
 
     </div>
@@ -136,11 +137,13 @@
             <p><ion-button [disabled]="!mapReady" (click)="publishMap()"><ion-icon name="cloud-upload-outline"></ion-icon>&nbsp; {{'PUBLISH_MAP'|translate}}</ion-button></p>
         </div>
         <div *ngIf="publishData">
-            <div style="font-size:larger;"><b>{{'PUBLISHED_MAP_OK_TEXT'|translate}}</b></div><br>
-            <div>{{'PUBLISHED_MAP_URL_TEXT'|translate}}
-                <br><br><span style="font-size:larger;"><b><a href="{{publishData.url}}" target="_blank">{{publishData.url}}</a></b></span>
-            </div>
+            <div class="publish_map_title"><b>{{'PUBLISHED_MAP_OK_TEXT'|translate}}</b></div><br>
             <div>
+                {{'PUBLISHED_MAP_URL_TEXT'|translate}}<br><br>
+                <span style="font-size:larger;margin-right:20px;"><b><a href="{{publishData.url}}" target="_blank">{{publishData.url}}</a></b></span>
+                <ion-button size="small" (click)="control.copyToClipboard(publishData.url)"><ion-icon name="copy-outline"></ion-icon>&nbsp; {{'COPY'|translate}}</ion-button>
+            </div>
+            <div class="note">
                 <br>{{'PUBLISHED_MAP_PRIVATE_KEY_TEXT'|translate}}
                 <br><br><b>{{publishData.key}}</b>
             </div>

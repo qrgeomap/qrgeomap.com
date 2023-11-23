@@ -119,13 +119,16 @@ export class Control {
     async toast ( txt, duration=3000 ) {
         // shows a toast message
 
-        var text:any=await this.translate.get([txt]);
-        let toast = await this.toastCtrl.create({
-            message: text,
-            duration: duration,
-            position: 'bottom'
+        this.translate.get(txt).subscribe(async (text)=>{
+            console.log(text);
+            let toast = await this.toastCtrl.create({
+                message: text,
+                duration: duration,
+                position: 'bottom'
+            });
+            if (text&&text.length>0) toast.present();
+            //console.log("toast: "+text);
         });
-        if (text&&text.length>0) toast.present();
     }
     
 
