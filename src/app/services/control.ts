@@ -3,7 +3,8 @@ import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { saveAs } from 'file-saver';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { AlertController, MenuController, NavController, ToastController  } from '@ionic/angular';
+import { AlertController, LoadingController, MenuController, NavController, ToastController  } from '@ionic/angular';
+import { NgForage, Driver, NgForageCache, CachedItem } from 'ngforage';
 
 
 
@@ -25,8 +26,10 @@ export class Control {
                 public alertCtrl:AlertController,
                 public toastCtrl:ToastController,
                 public menuController:MenuController,
+                public loadingController: LoadingController,
                 private router: Router,
-                private navController:NavController
+                private navController:NavController,
+                private readonly ngf: NgForage, 
                 ) {
 
         // set user's lang
@@ -35,6 +38,7 @@ export class Control {
         //this.setLang("en"); // forced (developing...)
 
   }
+
 
 
 
@@ -141,8 +145,9 @@ export class Control {
         this.canDismissLegalModal=true;
         this.closeMenu();
         setTimeout(()=>{
+            console.log(v);
             this.isLegalModalOpen=v;
-            this.canDismissLegalModal=false;
+            if ( v==true ) this.canDismissLegalModal=false;
         },1);
     }
   
@@ -194,6 +199,67 @@ export class Control {
   }
 
   
+  // -------------------------- LOADING SPINNER -----------------------
+
+  isLoading = false;
+  loadingDialog: any = null;
+
+  async showLoading ( text="" ) {
+
+    if ( this.isLoading ) {
+        this.updateLoadingMessage(text);
+        return; 
+    } 
+
+    var message = ( text=="") ? this.getString("PLEASE_WAIT") : text;
+    this.isLoading = true;
+    return await this.loadingController.create({
+      // duration: 5000,
+      message: message
+    }).then( dialog => {
+        this.loadingDialog = dialog;
+        this.loadingDialog.present().then(() => {
+          /*console.log('presented');*/
+          if ( !this.isLoading ) {
+            this.loadingDialog.dismiss().then(() => { /*console.log('abort presenting');*/ } );
+          }
+        });
+    });
+
+  }
+
+  updateLoadingMessage ( message ) {
+    this.loadingDialog.message=message;
+  }
+
+  async hideLoading () {
+
+    this.isLoading = false;
+    return await this.loadingController.dismiss().then(() => { /*console.log('dismissed');*/ } );
+
+  }
+
+
+
+
+  // -------------------------- STORAGE ----------------------------------
+
+    public setStorageItem ( key:string, data:any ) : Promise<any> {
+        // Saves "data" to persistent storage with "key". 
+        // Returns promise! --> use: await this.control.setStorageItem("my_key",123);
+        return this.ngf.setItem ( key, data );
+    }
+
+    public getStorageItem<T = any> ( key:string ) : Promise<T> {
+        // Gets the "data" stored on "key". 
+        // Returns promise! --> use: var data = await this.control.getStorageItem("my_key");
+        return this.ngf.getItem<T>(key);
+    }
+
+
+
+
+
 
   // -------------------------- MISC ----------------------------------
 
@@ -209,14 +275,22 @@ export class Control {
   } 
 
     
-  async copyToClipboard ( text ) {
+  async copyToClipboard ( text, auxTextarea=null ) {
         // Copy "text" to clipboard
-        var input = document.createElement('textarea');
-        input.innerHTML = text;
-        document.body.appendChild(input);
-        input.select();
-        var result = document.execCommand('copy');
-        document.body.removeChild(input);
+        var input:any = null;
+        if ( auxTextarea ) {
+            input=document.getElementById(auxTextarea);
+            input.innerHTML = text;
+            input.select();
+            document.execCommand('copy');
+        } else {
+            input=document.createElement('textarea');
+            input.innerHTML = text;
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand('copy');
+            document.body.removeChild(input);
+        }
         this.toast("COPIED");
   }
 

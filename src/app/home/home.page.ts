@@ -23,12 +23,15 @@ export class HomePage {
 
 
   loaded_map: boolean=false;                  // true when map finished loading
+  loaded_map_thumbnail: string="";            // A thumbnail of the loaded map (dataURL)  
   loaded_map_url:string="";                   // the link (source) included in the QR geomap 
+  current_map_link:string="";                 // the full link of the current loaded map ("https://www.qrgeomap.com...")  
   source_bar_visible:boolean=false;           // set to false to hide the source bar
 
   watchPositionID=null;                       // ID of the location watcher
 
   initialized=false;
+
 
   constructor ( public control:Control, private alertController:AlertController ) {
 
@@ -37,14 +40,12 @@ export class HomePage {
   }
 
 
-
-
   ngOnInit() { 
 
   }
 
 
-  ionViewDidEnter() { 
+  async ionViewDidEnter() { 
 
       if ( this.initialized ) { 
           setTimeout(()=>{ 
@@ -59,28 +60,36 @@ export class HomePage {
       this.createLeafletMap(); 
       
       // Check if image map to be loaded is set in the url:
-      // https://www.qrgeomap.com/?i=https:%2F%2Fwww.qrgeomap.com%2Fassets%2Fsample.png ("i" parameter will the the encoded url of the map image)
 
       var url:string=window.location.href;
       //console.log(url);
 
-      if ( url.includes("?i=") ) {  // URL includes link to image map --> Load it
+
+      if ( url.includes("?i=") ) {  
+            // URL includes link to image map --> Load it!
+            // https://www.qrgeomap.com/?i=https:%2F%2Fwww.qrgeomap.com%2Fassets%2Fsample.png ("i" parameter will the the encoded url of the map image)
 
             var img_url=decodeURIComponent(url.split("?i=")[1]);
-            this.loadMapFromImageFile(img_url);
+            this.loadMapFromImageSrc(img_url,url);
 
-      } else if ( url.includes("?p=") ) { // URL includes the "id" of a published map --> Load it
+      } else if ( url.includes("?p=") ) { 
+            // URL includes the "id" of a published map --> Load it!
 
             var id=decodeURIComponent(url.split("?p=")[1]);
             var img_url="https://www.wandapps.com/_qrgeomap_hosting/index.php?a=get_image&id="+id;
-            this.loadMapFromImageFile(img_url);
+            this.loadMapFromImageSrc(img_url,url);
 
-      } else if ( url.includes("qrgeomap=") ) { // Scanned the QR code (of a not published file) with the camera ...
+      } else if ( url.includes("qrgeomap=") ) { 
+            // Scanned the QR code (of a not published file) with the camera ...
 
             var msg="It looks like you scanned the QR code of a map image to get here. <br><br>To use a QR geomap image you need to (first) download the map image and (second) press the 'Map' button in this app to load the map image.";
             if ( this.control.lang=="es" ) msg="Parece que escaneaste el código QR de una imagen de mapa para llegar aquí. <br><br>Para usar uno de estos mapas tienes que (primero) descargar la imagen del mapa y (segundo) presionar el botón 'Mapa' en esta aplicación para cargar la imagen del mapa.";
             this.control.alert("HEY!",msg);
 
+      } else {
+            // (Try to) load the last map
+
+            this.loadLastMap();
       }
 
       this.initialized=true;
@@ -105,76 +114,176 @@ export class HomePage {
 
       this.map.on('click',(e)=>this.updateGreyMarker(e.latlng));
 
-
       // Initial location
       this.centerMapOnCurrentLocation();
 
   }
 
 
-  onMapFileSelected (evt) {
-      // user selected a file --> Load the map
+  async onMapFileSelected (evt) {
+      // user selected a file --> read the file and show the map
+
+      await this.control.showLoading(this.control.getString("LOADING_MAP")+"...");
 
       var tgt = evt.target || window.event.srcElement,
       files = tgt.files;
       if ( FileReader && files && files.length ) {
           var fr = new FileReader();
           fr.onload = ()=>{
-              this.loadMapFromImageFile(fr.result);
+              this.loadMapFromImageSrc(fr.result,"");
               var inputFile:any=document.getElementById('input_map_fab'); inputFile.value = "";
-          }
+          };
+          fr.onerror = () => {
+            this.control.hideLoading();
+            this.control.alert("ERROR","COULD_NOT_LOAD_MAP"); 
+          };
           fr.readAsDataURL(files[0]);
       }
 
   }
 
 
+  img:HTMLImageElement;     // aux img to load the map
 
-  loadMapFromImageFile ( file ) {
-      // Loads the (image) file, extracts geolocation from QR and shows on the map as Image Overlay layer
+  async loadMapFromImageSrc ( url_or_dataurl:any, link:string="", isLastMap:boolean=false ) {
+      // Loads the image, extracts geolocation from QR and shows it on the leaflet map as Image Overlay layer
+      // (step 1)
+      // "url_or_dataurl" must be the image file (already read as dataUrl) or the url of an image map
+      // "link" must be the original url of this map (https://www.qrgeomap.com...) / "" if comes from a local file selected
+      // "isLastMap" must be true if we are reloading the last map saved
 
-      console.log(file);
+      await this.control.showLoading(this.control.getString("LOADING_MAP")+"...");
 
-      var img = new Image();
-      img.crossOrigin = "Anonymous";
-      img.onload = () => { 
+      //console.log(file_or_url);
+      this.img = new Image();
+      this.img.crossOrigin = "Anonymous";
+      this.img.onload = () => { 
+          this.loadMapFromImageSrc2(link,isLastMap);
+      }; // img.onload
+      this.img.onerror = () => {
+          this.control.hideLoading();
+          this.control.alert("ERROR","COULD_NOT_LOAD_MAP"); 
+      };
+      this.img.onprogress = (e:any) => {
+          var completedPercentage = Math.round(100 * parseInt(e.loaded)/parseInt(e.total));
+          this.control.updateLoadingMessage(this.control.getString("LOADING_MAP")+"... ("+completedPercentage+"%)");
+      };
+      this.img.src = url_or_dataurl;
 
-          var canvas = document.createElement("canvas"); 
-          canvas.width = img.naturalWidth;
-          canvas.height = img.naturalHeight;
-          var ctx = canvas.getContext("2d");
-          ctx.drawImage(img,0,0);            
-          QRgeomap.extractQRgeomapFromImage(canvas).then((geodata:any)=>{
-              // geodata = { url, originalMapWidth, originalMapHeight, topLeftLat,topLeftLon, bottomRightLat,bottomRightLon, currentMapBottomLat }
+  }
 
-              var imageDataUrl = canvas.toDataURL(); // the canvas, now with the QR code removed!
 
-              var p1=[geodata.topLeftLat,geodata.topLeftLon];
-              var p2=[geodata.currentMapBottomLat,geodata.bottomRightLon];
-              var imageBounds = [ p1,p2 ]; // image bounds
+  async loadMapFromImageSrc2 ( link:string, isLastMap:boolean ) {
+        // (step 2) image is loaded --> extracts geolocation... 
 
-              // Add imageOverlay to the map (possibly removing the last one)
-              if ( this.imageOverlay ) this.map.removeLayer(this.imageOverlay);
-              this.imageOverlay=Leaflet.imageOverlay(imageDataUrl, imageBounds, { opacity:1.0 } );
-              this.imageOverlay.addTo(this.map);
-              this.map.fitBounds(imageBounds);    
+        var canvas = document.createElement("canvas"); 
+        canvas.width = this.img.naturalWidth;
+        canvas.height = this.img.naturalHeight;
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(this.img,0,0);            
+        QRgeomap.extractQRgeomapFromImage(canvas).then((geodata:any)=>{
+            // geodata = { url, originalMapWidth, originalMapHeight, topLeftLat,topLeftLon, bottomRightLat,bottomRightLon, currentMapBottomLat }
 
-              // Show toolbar with "Source" info (link), if present in the QR
-              var url=geodata.url;
-              if ( url.includes("?qrgeomap=") ) url=url.split("?qrgeomap=")[0];
-              else if ( url.includes("&qrgeomap=") ) url=url.split("&qrgeomap=")[0];
-              this.loaded_map_url=url;
-              if ( this.loaded_map_url.startsWith("https://www.qrgeomap.com") ) this.loaded_map_url="";
+            var imageDataUrl = canvas.toDataURL(); // the canvas, now with the QR code removed!
 
-              this.loaded_map=true;
-              this.source_bar_visible=true;
-              this.polyline.setLatLngs([]); // Restart track
-          
-          }).catch((err)=>{ this.control.alert("ERROR",err) });
+            // image bounds
+            var p1=[geodata.topLeftLat,geodata.topLeftLon];
+            var p2=[geodata.currentMapBottomLat,geodata.bottomRightLon];
+            var imageBounds = [ p1,p2 ]; 
 
-      }; //imageQRgeomap.onload 
-      img.src = file;
+            // Add imageOverlay to the map (possibly removing the last one)
+            if ( this.imageOverlay ) this.map.removeLayer(this.imageOverlay);
+            this.imageOverlay=Leaflet.imageOverlay(imageDataUrl, imageBounds, { opacity:1.0 } );
+            this.imageOverlay.addTo(this.map);
+            this.map.fitBounds(imageBounds);    
 
+            // Show toolbar with "Source" info (link), if present in the QR
+            var url=geodata.url;
+            if ( url.includes("?qrgeomap=") ) url=url.split("?qrgeomap=")[0];
+            else if ( url.includes("&qrgeomap=") ) url=url.split("&qrgeomap=")[0];
+            this.loaded_map_url=url;
+            if ( this.loaded_map_url.startsWith("https://www.qrgeomap.com") ) this.loaded_map_url="";
+
+            this.loaded_map=true;
+            this.source_bar_visible=true;
+            if ( this.isWatchingPosition() ) this.watchPosition();              // Stop if was watching position 
+            this.polyline.setLatLngs([]);                                       // Restart track line
+            
+            this.makeThumbnail();                                               // Make thumb of the current map
+
+            this.control.hideLoading();                                         // Map loading finished!
+
+            if ( isLastMap ) {
+                this.control.toast("LAST_MAP_RELOADED"); 
+            } else {
+                this.saveCurrentMap(link);                                      // Save the new map loaded (to be able to restore later)
+                this.control.alert("MAP_LOADED_TITLE","MAP_LOADED_TEXT");
+            }
+
+        }).catch((err)=>{ 
+            this.control.hideLoading();
+            this.control.alert("ERROR",err) 
+        });
+
+  }
+
+
+  makeThumbnail () {
+        // creates the thumnail of the loaded map (img)
+        var sw=this.img.naturalWidth;
+        var sh=this.img.naturalHeight;
+        var canvas = document.createElement("canvas"); 
+        var dw=180;
+        var dh=dw*sh/sw;
+        canvas.width = dw;
+        canvas.height = dh;
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(this.img,0,0,sw,sh,0,0,dw,dh); 
+        this.loaded_map_thumbnail = canvas.toDataURL();
+        //console.log("loaded_map_thumbnail",this.loaded_map_thumbnail);
+  }
+
+
+  async saveCurrentMap ( link:string ) {
+        // Saves the current map and its link
+
+        var canvas = document.createElement("canvas"); 
+        canvas.width = this.img.naturalWidth;
+        canvas.height = this.img.naturalHeight;
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(this.img,0,0); 
+        var current_map_dataUrl = canvas.toDataURL();
+        await this.control.setStorageItem("current_map_link",link);
+        await this.control.setStorageItem("current_map_dataUrl",current_map_dataUrl);
+        console.log("current map saved!"); 
+
+  }
+
+
+  async loadLastMap () {
+        // (Tries to) load the last saved map in local storage
+
+        this.current_map_link=await this.control.getStorageItem("current_map_link"); 
+        if ( this.current_map_link==null ) this.current_map_link="";
+        //this.current_map_link="https://www.qrgeomap.com/?p=11"; // test
+
+        var current_map_dataUrl=await this.control.getStorageItem("current_map_dataUrl"); 
+        if ( current_map_dataUrl ) {
+            this.loadMapFromImageSrc(current_map_dataUrl,this.current_map_link,true);
+            console.log("current map loaded!"); 
+        }
+
+  }
+
+
+  downloadCurrentMap() {
+        // Downloads the current map
+        var canvas = document.createElement("canvas"); 
+        canvas.width = this.img.naturalWidth;
+        canvas.height = this.img.naturalHeight;
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(this.img,0,0); 
+        this.control.downloadCanvasAsPNGfile(canvas,"QRgeomap.png");
   }
 
 
@@ -195,11 +304,11 @@ export class HomePage {
 
   
 
-  watchPosition ( ) {
+  watchPosition () {
       // Starts/stops the location watcher.
       // When it's active it adds every coordinates received to the poliline ("track") that is shown on top of the image overlay
 
-      if ( this.watchPositionID!=null ) { // stop watching
+      if ( this.isWatchingPosition() ) { // stop watching
           
           navigator.geolocation.clearWatch(this.watchPositionID);
           this.watchPositionID=null;
@@ -226,6 +335,11 @@ export class HomePage {
               }, (err)=>{}, options );
       }//else
 
+  }
+
+
+  isWatchingPosition () {
+        return this.watchPositionID!=null;
   }
 
 
@@ -257,7 +371,9 @@ export class HomePage {
       var pos=marker.getLatLng();
       var lat=Math.round(pos.lat*10000000)/10000000;
       var lng=Math.round(pos.lng*10000000)/10000000;
-      this.control.alert("Lat,Lon",""+lat+","+lng);
+      var latlng=""+lat+","+lng;
+      this.control.copyToClipboard(latlng);
+      this.control.alert("Lat,Lon",latlng);
   }
 
 

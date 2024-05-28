@@ -13,28 +13,55 @@
       <ion-list lines="full">
 
 
-        <ion-item button (click)="control.navigate('about',{})">
-            <span text-wrap class="small-letter"> {{'ABOUT'|translate}}</span>
-        </ion-item>
+          <ion-item button (click)="control.navigate('about',{})">
+              <span text-wrap class="small-letter"> {{'ABOUT'|translate}}</span>
+          </ion-item>
 
-        <ion-item button (click)="control.showLegal(true)">
-            <span text-wrap class="small-letter"> {{'LEGAL_ALL'|translate}}</span>
-        </ion-item>
+          <ion-item button (click)="control.showLegal(true)">
+              <span text-wrap class="small-letter"> {{'LEGAL_ALL'|translate}}</span>
+          </ion-item>
 
-        <ion-item-divider></ion-item-divider>
+          <ion-item-divider></ion-item-divider>
+        
+          <ion-item>
+              <div class='fake_file_input_ion_item-btn_container-div'> 
+                  <label for="input_map_menu" class="fake_file_input_ion_item-btn_behind">
+                      <ion-icon class="item-icon-ionicon" name='map-outline'></ion-icon> <span text-wrap>{{'LOAD_MAP'|translate}}</span>
+                  </label>
+                  <input id="input_map_menu" style="cursor:pointer;" type="file" accept="image/*" class="fake_file_input_ion_item-btn_hide-input" (change)="onMapFileSelected($event)" />
+              </div>                    
+          </ion-item>
       
-        <ion-item>
-            <div class='fake_file_input_ion_item-btn_container-div'> 
-                <label for="input_map_menu" class="fake_file_input_ion_item-btn_behind">
-                    <ion-icon class="item-icon-ionicon" name='map-outline'></ion-icon> <span text-wrap>{{'LOAD_MAP'|translate}}</span>
-                </label>
-                <input id="input_map_menu" style="cursor:pointer;" type="file" accept="image/*" class="fake_file_input_ion_item-btn_hide-input" (change)="onMapFileSelected($event)" />
-            </div>                    
-        </ion-item>
-    
-        <ion-item button (click)="control.navigate('create-map',{})">
-          <ion-icon class="item-icon-ionicon" name='create-outline'></ion-icon><span text-wrap class="small-letter"> {{'CREATE_MAP'|translate}}</span>
-       </ion-item>
+          <ion-item button (click)="control.navigate('create-map',{})">
+            <ion-icon class="item-icon-ionicon" name='create-outline'></ion-icon><span text-wrap class="small-letter"> {{'CREATE_MAP'|translate}}</span>
+          </ion-item>
+
+          <ng-container *ngIf="control.homePage && control.homePage.loaded_map">
+
+              <ion-item-divider></ion-item-divider>
+              
+              <ion-item>
+                  <div>
+                      <div style="margin-top:10px;">{{'CURRENT_MAP'|translate}}:</div>
+                      <div style="margin-top:10px;">
+                          <img src="{{control.homePage.loaded_map_thumbnail}}" style="width:100%;max-width:180px;"/>
+                      </div>
+                      <div><ion-button (click)="control.homePage.downloadCurrentMap()"><ion-icon color="light" name="download-outline"></ion-icon>&nbsp; {{'DOWNLOAD'|translate}}</ion-button></div>
+                      <div *ngIf="control.homePage.current_map_link!=''" style="margin-top:10px;">
+                          <span>{{'LINK'|translate}}:</span>
+                          <br>
+                          <span style="font-size:smaller;">{{control.homePage.current_map_link}}</span>
+                          <br>
+                          <div>
+                              <div style="max-height:1px;opacity:0.0;"><textarea id="auxTextarea"></textarea></div>
+                              <ion-button size="small" (click)="control.copyToClipboard(control.homePage.current_map_link,'auxTextarea')"><ion-icon color="light" name="copy-outline"></ion-icon>&nbsp; {{'COPY'|translate}}</ion-button>
+                          </div>
+                      </div>
+                      <br>
+                  </div>
+              </ion-item>
+  
+          </ng-container>
 
 
       </ion-list>

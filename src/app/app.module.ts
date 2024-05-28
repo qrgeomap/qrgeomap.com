@@ -16,6 +16,8 @@ import { CommonModule } from '@angular/common';
 import { Control } from './services/control';
 import { ComponentsModule } from './components/components.module';
 import { LegalComponent } from './legal/legal.component';
+import { DEFAULT_CONFIG, NgForageOptions, NgForageConfig, Driver } from 'ngforage';
+
 
 
 @NgModule({
@@ -43,7 +45,17 @@ import { LegalComponent } from './legal/legal.component';
     })],
   providers: [
     Control,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    {
+      provide: DEFAULT_CONFIG,
+      useValue: {
+        name: 'QRgeomap',
+        driver: [ // defaults to indexedDB -> webSQL -> localStorage
+          Driver.INDEXED_DB,
+          Driver.LOCAL_STORAGE
+        ]
+      } as NgForageOptions
+    }
   ],
   bootstrap: [AppComponent],
 })

@@ -9,7 +9,6 @@ npm install @ngx-translate/core @ngx-translate/http-loader --save
 npm install gpxparser --save
 npm install file-saver --save
 
-
 ng add @angular/pwa
 
     if errors...:
@@ -19,6 +18,21 @@ ng add @angular/pwa
     npm install -g @angular/cli@latest
     Remove "node_modules" folder
     npm install --force
+
+
+Updating from Ionic 6 to 7 (https://ionicframework.com/docs/updating/7-0):
+ng update @angular/core@17 @angular/cli@17 --allow-dirty
+npm install rxjs@7.5.0
+npm install @ionic/angular@7
+In polyfill.ts:
+    //import 'zone.js/dist/zone';
+    import 'zone.js';
+    import 'zone.js/testing';
+
+npm i ngforage
+
+
+
 
 
 

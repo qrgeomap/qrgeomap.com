@@ -21,7 +21,7 @@ export class AppComponent {
       if ( FileReader && files && files.length ) {
           var fr = new FileReader();
           fr.onload = ()=>{
-              this.control.homePage.loadMapFromImageFile(fr.result);
+              this.control.homePage.loadMapFromImageSrc(fr.result);
               var inputFile:any=document.getElementById('input_map_menu'); inputFile.value = "";
           }
           fr.readAsDataURL(files[0]);
