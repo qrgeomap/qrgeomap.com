@@ -82,8 +82,8 @@ export class HomePage {
       } else if ( url.includes("qrgeomap=") ) { 
             // Scanned the QR code (of a not published file) with the camera ...
 
-            var msg="It looks like you scanned the QR code of a map image to get here. <br><br>To use a QR geomap image you need to (first) download the map image and (second) press the 'Map' button in this app to load the map image.";
-            if ( this.control.lang=="es" ) msg="Parece que escaneaste el código QR de una imagen de mapa para llegar aquí. <br><br>Para usar uno de estos mapas tienes que (primero) descargar la imagen del mapa y (segundo) presionar el botón 'Mapa' en esta aplicación para cargar la imagen del mapa.";
+            var msg="You have scanned the QR code of a map that does not include a download link, only its geolocation. In order to use this map here you would need to have it saved on this device and then load it from the 'Open Map' button in this application.";
+            if ( this.control.lang=="es" ) msg="Has escaneado el código QR de un mapa que no incluye enlace para descarga, solo su geolocalización. Para usar ese mapa aquí tendrías que tenerlo guardado en este dispositivo y luego cargarlo desde el botón 'Abrir Mapa' de esta aplicación.";
             this.control.alert("HEY!",msg);
 
       } else {
@@ -255,6 +255,7 @@ export class HomePage {
         var current_map_dataUrl = canvas.toDataURL();
         await this.control.setStorageItem("current_map_link",link);
         await this.control.setStorageItem("current_map_dataUrl",current_map_dataUrl);
+        setTimeout(()=>{this.current_map_link=link;},1);
         console.log("current map saved!"); 
 
   }
