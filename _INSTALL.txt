@@ -20,6 +20,15 @@ ng add @angular/pwa
     npm install --force
 
 
+(icons)
+
+npm install -g ngx-pwa-icons
+
+    Create an icon.png file in the root folder of your Angular project.
+    Then run: ngx-pwa-icons
+    For good results, your icon.png file should be: square, transparant background, at least 512*512px.
+
+
 Updating from Ionic 6 to 7 (https://ionicframework.com/docs/updating/7-0):
 ng update @angular/core@17 @angular/cli@17 --allow-dirty
 npm install rxjs@7.5.0
@@ -37,12 +46,16 @@ npm i ngforage
 
 
 
+
+
 ---
 
-(icons)
+DOCKER:
 
-npm install -g ngx-pwa-icons
+Serve app:
+docker compose up --build
 
-    Create an icon.png file in the root folder of your Angular project.
-    Then run: ngx-pwa-icons
-    For good results, your icon.png file should be: square, transparant background, at least 512*512px.
+Exec commands...:
+docker exec -it qrgeomapcom-web-1 /bin/sh
+
+
