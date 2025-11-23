@@ -18,6 +18,9 @@ import { NgForage, Driver, NgForageCache, CachedItem } from 'ngforage';
 export class Control {
 
 
+  public version:string="25.11.23";  // app version  
+
+
   homePage:any=null;    // Pointer to the homePage
 
 
