@@ -134,7 +134,10 @@
             <div style="font-size:larger;"><span class="publish_map_title">{{'PUBLISH_MAP_TITLE'|translate}}</span></div><br>
             <div>{{'PUBLISH_MAP_SUBTITLE'|translate}}</div>
             <p><a role="button" (click)="control.showLegal(true)"><span class="legal_link">{{'LEGAL_ALL'|translate}}</span></a></p>
-            <p><ion-button [disabled]="!mapReady" (click)="publishMap()"><ion-icon name="cloud-upload-outline"></ion-icon>&nbsp; {{'PUBLISH_MAP'|translate}}</ion-button></p>
+            <p>
+                <ion-button [disabled]="!mapReady||publishingMap" (click)="publishMap()"><ion-icon name="cloud-upload-outline"></ion-icon>&nbsp; {{'PUBLISH_MAP'|translate}}</ion-button>
+                <ion-spinner *ngIf="publishingMap" name="crescent"></ion-spinner>
+            </p>
         </div>
         <div *ngIf="publishData">
             <div class="publish_map_title"><b>{{'PUBLISHED_MAP_OK_TEXT'|translate}}</b></div><br>

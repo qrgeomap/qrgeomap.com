@@ -46,6 +46,8 @@
 	"COPY":"Copiar",
 	"COPIED":"Copiado en el portapapeles",
 
+	"LOCATION_PERMISSION_DENIED":"Se necesita permiso de ubicación para usar esta función. Ve a los ajustes de tu dispositivo y habilita el permiso de ubicación para esta aplicación web.",
+
 	"PLEASE_WAIT":"Espera por favor",
 	"NO":"No",
 	"YES":"Sí",

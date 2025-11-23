@@ -636,7 +636,7 @@ export class CreateMapPage implements OnInit {
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
-        if ( txt!="" ) {
+        if ( txt!="" && txt!=null ) {
             var fontSize=Math.floor(waypointSize*0.4);
             ctx.font = fontSize+"px Arial";            
             ctx.strokeStyle = 'rgba(255,255,255,0.5)';
@@ -740,10 +740,12 @@ export class CreateMapPage implements OnInit {
 
     // ---------- Publish Map --------------
 
+    publishingMap=false;
 
     publishMap() { 
         // Publish the map image and get a link to use it
 
+        this.publishingMap=true;
         // Prepare: get an "id" for the new map image
         this.control.httpJsonPost(this.QRGEOMAP_HOSTING_API_URL,{function:"prepare_new_file"},(data)=>{
             if ( data.status=="OK" ) {
@@ -762,6 +764,7 @@ export class CreateMapPage implements OnInit {
                         console.log(data);
                         if ( data.status=="OK" ) {
 
+                            this.publishingMap=false;
                             // Published! Show link and key
                             this.publishData = { url:""+this.source_link_in_qr, key:""+id+"-"+file_key };
                             this.source_link = "https://www.qrgeomap.com";
@@ -770,6 +773,7 @@ export class CreateMapPage implements OnInit {
                     },(err)=>{ console.log(err); this.control.alert("ERROR","UNABLE_TO_PUBLISH_MAP"); });
                 });
             } else { 
+                this.publishingMap=false;
                 this.control.alert("ERROR",data.error); 
             }
         },(err)=>{ console.log(err); this.control.alert("ERROR","UNABLE_TO_PUBLISH_MAP"); });

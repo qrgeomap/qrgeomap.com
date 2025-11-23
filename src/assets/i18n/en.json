@@ -45,6 +45,8 @@
 	"COPY":"Copy",
 	"COPIED":"Copied to clipboard",
 
+	"LOCATION_PERMISSION_DENIED":"Location permission is required to use this feature. Go to your device settings and enable location permission for this web app.",
+	
 	"PLEASE_WAIT":"Please wait",
 	"NO":"No",
 	"YES":"Yes",

@@ -297,10 +297,14 @@ export class HomePage {
 
 
   centerMapOnCurrentLocation () {
-      // gets current location and centers the map on it
-      navigator.geolocation.getCurrentPosition((position) => {
-          this.map.setView([position.coords.latitude,position.coords.longitude],12);
-      });
+        // gets current location and centers the map on it
+        navigator.permissions.query({ name: 'geolocation' }).then(result => {
+            if (result.state === "granted") {
+                navigator.geolocation.getCurrentPosition(pos => {
+                    this.map.setView([pos.coords.latitude,pos.coords.longitude],12);
+                });
+            }
+        });
   }
 
   
@@ -316,7 +320,7 @@ export class HomePage {
 
       } else { // start watching
           
-          var options={ enableHighAccuracy:true, timeout:3000 };
+          var options={ enableHighAccuracy:true, timeout:10000, maximumAge:0 };
           this.watchPositionID = navigator.geolocation.watchPosition(
               (position) => {
 
@@ -333,7 +337,13 @@ export class HomePage {
                   // draw marker
                   this.updateRedMarker({lat:lat,lng:lng});
 
-              }, (err)=>{}, options );
+              }, (err)=>{
+
+                    if ( err.code === err.PERMISSION_DENIED ) {
+                        this.control.alert("ERROR","LOCATION_PERMISSION_DENIED");
+                    }
+
+              }, options );
       }//else
 
   }
