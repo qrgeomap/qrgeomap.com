@@ -309,6 +309,9 @@ export class HomePage {
 
   
 
+  permissionAlertShown = false;
+
+
   watchPosition () {
       // Starts/stops the location watcher.
       // When it's active it adds every coordinates received to the poliline ("track") that is shown on top of the image overlay
@@ -317,6 +320,7 @@ export class HomePage {
           
           navigator.geolocation.clearWatch(this.watchPositionID);
           this.watchPositionID=null;
+          this.permissionAlertShown = false;
 
       } else { // start watching
           
@@ -340,7 +344,15 @@ export class HomePage {
               }, (err)=>{
 
                     if ( err.code === err.PERMISSION_DENIED ) {
-                        this.control.alert("ERROR","LOCATION_PERMISSION_DENIED");
+
+                        // IMPORTANT!! iOS Safari can repeat the error callback multiple times unless we stop the watcher!
+                        navigator.geolocation.clearWatch(this.watchPositionID);
+                        this.watchPositionID = null;
+
+                        if ( !this.permissionAlertShown ) {
+                            this.permissionAlertShown = true;
+                            this.control.alert("ERROR","LOCATION_PERMISSION_DENIED");
+                        }
                     }
 
               }, options );
@@ -348,6 +360,9 @@ export class HomePage {
 
   }
 
+
+
+  
 
   isWatchingPosition () {
         return this.watchPositionID!=null;
