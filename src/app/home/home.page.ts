@@ -114,6 +114,11 @@ export class HomePage {
 
       this.map.on('click',(e)=>this.updateGreyMarker(e.latlng));
 
+      // Disable touch zooming (to avoid issues with image overlay scaling/zooming over max zoom level)
+      this.map.touchZoom.disable(); 
+      this.map.doubleClickZoom.disable();
+      //this.map.scrollWheelZoom.disable();
+
       // Initial location
       this.centerMapOnCurrentLocation();
 
